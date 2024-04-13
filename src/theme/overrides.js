@@ -147,5 +147,14 @@ export function overrides(theme) {
         },
       },
     },
+    MuiTablePagination: {
+      defaultProps: {
+        labelDisplayedRows: ({
+                               from,
+                               to,
+                               count,
+                             }) => `${from}-${to} / ${count !== -1 ? count : `${to}以上`}`,
+      }
+    },
   };
 }

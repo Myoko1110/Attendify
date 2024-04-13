@@ -18,6 +18,11 @@ const navConfig = [
     icon: icon('ic_analytics'),
   },
   {
+    title: '予定',
+    path: '/schedule',
+    icon: icon('ic_calendar'),
+  },
+  {
     title: '部員',
     path: '/members',
     icon: icon('ic_user'),
@@ -28,25 +33,10 @@ const navConfig = [
     icon: icon('ic_music'),
   },
   {
-    title: '予定',
-    path: '/schedule',
-    icon: icon('ic_calendar'),
-  },
-  {
     title: 'フォーム',
     path: '/form',
     icon: icon('ic_docs'),
-  },
-  {
-    title: 'login',
-    path: '/login',
-    icon: icon('ic_lock'),
-  },
-  {
-    title: 'Not found',
-    path: '/404',
-    icon: icon('ic_disabled'),
-  },
+  }
 ];
 
 export default navConfig;

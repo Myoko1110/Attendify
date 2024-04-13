@@ -1,28 +1,16 @@
-import { sample } from 'lodash';
-import { faker } from '@faker-js/faker';
+export function getMembers(userId, token, part=null, grade=null) {
+  const XHR = new XMLHttpRequest();
 
-// ----------------------------------------------------------------------
+  let url = `http://localhost:8000/api/v1/member/?userId=${userId.replace("_", "")}&token=${token}`;
+  if (part) url += `&part=${part}`;
+  if (grade) url += `&grade=${grade}`;
 
-export const users = [...Array(24)].map((_, index) => ({
-  id: faker.string.uuid(),
-  name: faker.person.fullName(),
-  part: sample([
-    'Fl',
-    'Cl',
-    'Wr',
-    'Sax',
-    'Tp',
-    'Tb',
-    'Hr',
-    'Bass',
-    'Per',
-  ]),
-  grade: sample([
-    '中1',
-    '中2',
-    '中3',
-    '高1',
-    '高2',
-  ]),
-  rate: faker.number.float({min: 0, max: 100, precision: 0.01})
-}));
+  XHR.open("GET", url, false)
+  XHR.send();
+
+  if (XHR.status !== 200) {
+    return false;
+  }
+  const res = JSON.parse(XHR.response);
+  return res.members;
+}

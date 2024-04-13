@@ -16,7 +16,7 @@ export default function UserTableHead({
   orderBy,
   rowCount,
   headLabel,
-  numSelected,
+  selected,
   onRequestSort,
   onSelectAllClick,
 }) {
@@ -29,8 +29,8 @@ export default function UserTableHead({
       <TableRow>
         <TableCell padding="checkbox">
           <Checkbox
-            indeterminate={numSelected > 0 && numSelected < rowCount}
-            checked={rowCount > 0 && numSelected === rowCount}
+            indeterminate={selected.length > 0 && selected.length < rowCount}
+            checked={rowCount > 0 && selected.length === rowCount}
             onChange={onSelectAllClick}
           />
         </TableCell>
@@ -67,7 +67,7 @@ UserTableHead.propTypes = {
   orderBy: PropTypes.string,
   rowCount: PropTypes.number,
   headLabel: PropTypes.array,
-  numSelected: PropTypes.number,
+  selected: PropTypes.array,
   onRequestSort: PropTypes.func,
   onSelectAllClick: PropTypes.func,
 };

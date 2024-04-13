@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useCookies } from 'react-cookie';
 
 import Card from '@mui/material/Card';
 import Stack from '@mui/material/Stack';
@@ -10,7 +11,7 @@ import Typography from '@mui/material/Typography';
 import TableContainer from '@mui/material/TableContainer';
 import TablePagination from '@mui/material/TablePagination';
 
-import { users } from 'src/_mock/user';
+import { getMembers } from 'src/_mock/user';
 
 import Iconify from 'src/components/iconify';
 import Scrollbar from 'src/components/scrollbar';
@@ -26,6 +27,8 @@ import { emptyRows, applyFilter, getComparator } from '../utils';
 // ----------------------------------------------------------------------
 
 export default function MembersPage() {
+  const [cookies,] = useCookies(["status", ""]);
+
   const [page, setPage] = useState(0);
   const [order, setOrder] = useState('asc');
   const [selected, setSelected] = useState([]);
@@ -33,6 +36,17 @@ export default function MembersPage() {
   const [filterName, setFilterName] = useState('');
   const [rowsPerPage, setRowsPerPage] = useState(20);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [members, setMembers] = useState(getMembers(cookies.userId, cookies.session));
+
+  if (!members) {
+    return (
+      <p>エラー</p>
+    )
+  }
+
+  const updateUsers = () => {
+    setMembers(getMembers(cookies.userId, cookies.session))
+  }
 
   const handleSort = (event, id) => {
     const isAsc = orderBy === id && order === 'asc';
@@ -44,18 +58,18 @@ export default function MembersPage() {
 
   const handleSelectAllClick = (event) => {
     if (event.target.checked) {
-      const newSelecteds = users.map((n) => n.name);
+      const newSelecteds = members.map((n) => n.email);
       setSelected(newSelecteds);
       return;
     }
     setSelected([]);
   };
 
-  const handleClick = (event, name) => {
-    const selectedIndex = selected.indexOf(name);
+  const handleClick = (event, email) => {
+    const selectedIndex = selected.indexOf(email);
     let newSelected = [];
     if (selectedIndex === -1) {
-      newSelected = newSelected.concat(selected, name);
+      newSelected = newSelected.concat(selected, email);
     } else if (selectedIndex === 0) {
       newSelected = newSelected.concat(selected.slice(1));
     } else if (selectedIndex === selected.length - 1) {
@@ -88,7 +102,7 @@ export default function MembersPage() {
   }
 
   const dataFiltered = applyFilter({
-    inputData: users,
+    inputData: members,
     comparator: getComparator(order, orderBy),
     filterName,
   });
@@ -108,13 +122,15 @@ export default function MembersPage() {
           >
             追加
           </Button>
-          <UserAddDialog isDialogOpen={isDialogOpen} setIsDialogOpen={setIsDialogOpen} />
+          <UserAddDialog isDialogOpen={isDialogOpen} setIsDialogOpen={setIsDialogOpen} updateUsers={updateUsers} />
         </Stack>
         <Card>
           <UserTableToolbar
-              numSelected={selected.length}
+              selected={selected}
+              setSelected={setSelected}
               filterName={filterName}
               onFilterName={handleFilterByName}
+              updateUsers={updateUsers}
           />
 
           <Scrollbar>
@@ -123,8 +139,8 @@ export default function MembersPage() {
                 <UserTableHead
                     order={order}
                     orderBy={orderBy}
-                    rowCount={users.length}
-                    numSelected={selected.length}
+                    rowCount={members.length}
+                    selected={selected}
                     onRequestSort={handleSort}
                     onSelectAllClick={handleSelectAllClick}
                     headLabel={[
@@ -140,19 +156,22 @@ export default function MembersPage() {
                       .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                       .map((row) => (
                           <UserTableRow
-                              key={row.id}
-                              name={row.name}
+                              key={row.email}
+                              lastName={row.lastName}
+                              firstName={row.firstName}
                               part={row.part}
                               grade={row.grade}
-                              rate={row.rate}
-                              selected={selected.indexOf(row.name) !== -1}
-                              handleClick={(event) => handleClick(event, row.name)}
+                              rate={100}
+                              email={row.email}
+                              selected={selected.indexOf(row.email) !== -1}
+                              handleClick={(event) => handleClick(event, row.email)}
+                              updateUsers={updateUsers}
                           />
                       ))}
 
                   <TableEmptyRows
                       height={77}
-                      emptyRows={emptyRows(page, rowsPerPage, users.length)}
+                      emptyRows={emptyRows(page, rowsPerPage, members.length)}
                   />
 
                   {notFound && <TableNoData query={filterName} />}
@@ -164,11 +183,12 @@ export default function MembersPage() {
           <TablePagination
               page={page}
               component="div"
-              count={users.length}
+              count={members.length}
               rowsPerPage={rowsPerPage}
               onPageChange={handleChangePage}
               rowsPerPageOptions={[20, 50, 100]}
               onRowsPerPageChange={handleChangeRowsPerPage}
+              labelRowsPerPage="1ページあたりの表示数"
           />
         </Card>
       </Container>

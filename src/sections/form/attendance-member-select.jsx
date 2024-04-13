@@ -1,10 +1,15 @@
 import { useState } from 'react';
+import PropTypes from 'prop-types';
 
 import Stack from '@mui/material/Stack';
 import MenuItem from '@mui/material/MenuItem';
 import { Select, FormLabel, TextField, FormControl } from '@mui/material';
 
-export default function AttendanceMemberSelect() {
+export default function AttendanceMemberSelect({
+  email,
+  lastName,
+  firstName,
+                                               }) {
   const [isOther, setIsOther] = useState(false);
   const [attendance, setAttendance] = useState("");
   const [attendanceValue, setAttendanceValue] = useState("");
@@ -32,7 +37,7 @@ export default function AttendanceMemberSelect() {
 
   return (
     <FormControl fullWidth sx={{ my: 1 }}>
-      <FormLabel required sx={{fontSize: "15px"}}>藤森大起</FormLabel>
+      <FormLabel sx={{fontSize: "15px"}}>{lastName} {firstName}</FormLabel>
       <Stack direction="row" alignItems="center">
         <Select
           id="date"
@@ -66,5 +71,10 @@ export default function AttendanceMemberSelect() {
       </Stack>
     </FormControl>
   );
+}
 
+AttendanceMemberSelect.propTypes = {
+  email: PropTypes.string,
+  lastName: PropTypes.string,
+  firstName: PropTypes.string,
 }

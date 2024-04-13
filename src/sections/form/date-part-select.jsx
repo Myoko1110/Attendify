@@ -25,7 +25,7 @@ export default function DatePartSelect({
   return (
     <Box sx={{ mt: 6, mx: 'auto' }}>
       <FormControl fullWidth sx={{ my: 1 }}>
-        <FormLabel required>日付</FormLabel>
+        <FormLabel>日付</FormLabel>
         <Select
           id="date"
           inputProps={{ 'aria-label': 'Without label' }}
@@ -40,7 +40,7 @@ export default function DatePartSelect({
         </Select>
       </FormControl>
       <FormControl fullWidth sx={{ my: 1 }}>
-        <FormLabel required>パート</FormLabel>
+        <FormLabel>パート</FormLabel>
         <Select
           id="part"
           inputProps={{ 'aria-label': 'Without label' }}
@@ -62,15 +62,15 @@ export default function DatePartSelect({
         </Select>
       </FormControl>
       <FormControl fullWidth sx={{ my: 1 }}>
-        <FormLabel required>学年</FormLabel>
+        <FormLabel>学年</FormLabel>
         <RadioGroup
           defaultValue="female"
           name="radio-buttons-group"
           onChange={handleGradeChange}
           value={grade}
         >
-          <FormControlLabel value="high" control={<Radio />} label="高校" />
-          <FormControlLabel value="junior" control={<Radio />} label="中学" />
+          <FormControlLabel value="High" control={<Radio />} label="高校" />
+          <FormControlLabel value="Junior" control={<Radio />} label="中学" />
         </RadioGroup>
       </FormControl>
     </Box>

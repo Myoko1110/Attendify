@@ -3,32 +3,36 @@ import { useState } from 'react';
 import PropTypes from 'prop-types';
 import { useCookies } from 'react-cookie';
 
+import Button from '@mui/material/Button';
 import MenuItem from '@mui/material/MenuItem';
 import {
-  Stack,
   Alert,
+  Stack,
   Dialog,
   Select,
-  Button,
   TextField,
   InputLabel,
-  DialogTitle,
-  FormControl,
-  DialogContent, DialogActions,
+  DialogTitle, FormControl, DialogActions, DialogContent,
 } from '@mui/material';
 
 import { parts } from '../../_mock/part';
 
-export default function UserAddDialog({
-                                        isDialogOpen,
-                                        setIsDialogOpen,
-                                        updateUsers,
-                                      }) {
-  const [lastName, setLastName] = useState('');
-  const [firstName, setFirstName] = useState('');
-  const [email, setEmail] = useState('');
-  const [part, setPart] = useState('');
-  const [grade, setGrade] = useState('');
+export default function UserEditDialog({
+                                         open,
+                                         setOpen,
+                                         email,
+                                         lastName,
+                                         firstName,
+                                         part,
+                                         grade,
+                                         updateUsers,
+                                       },
+) {
+  const [inputLastName, setLastName] = useState(lastName);
+  const [inputFirstName, setFirstName] = useState(firstName);
+  const [inputEmail, setEmail] = useState(email);
+  const [inputPart, setPart] = useState(part);
+  const [inputGrade, setGrade] = useState(grade);
 
   const [isError, setIsError] = useState(false);
 
@@ -50,51 +54,54 @@ export default function UserAddDialog({
     setGrade(e.target.value);
   };
 
+  const handleChancelClick = () => {
+    setOpen(false);
+  };
+
   const resetInputs = () => {
-    setLastName('');
-    setFirstName('');
-    setEmail('');
-    setPart('');
-    setGrade('');
+    setLastName(lastName);
+    setFirstName(firstName);
+    setEmail(email);
+    setPart(part);
+    setGrade(grade);
     setIsError(false);
   };
 
   const handleClick = (e) => {
     e.preventDefault();
-    if (!(lastName && firstName && email && part && grade)) {
+    if (!(inputLastName && inputFirstName && inputEmail && inputPart && inputGrade)) {
       setIsError(true);
     } else {
 
       const { session, userId } = cookies;
-      axios.post('http://localhost:8000/api/v1/member/', {
-        lastName,
-        firstName,
+      axios.put('http://localhost:8000/api/v1/member/', {
+        lastName: inputLastName,
+        firstName: inputFirstName,
         email,
-        part,
-        grade,
+        newEmail: inputEmail,
+        part: inputPart,
+        grade: inputGrade,
         userId: userId.replace('_', ''),
         token: session,
       })
-        .then(response => {
-          setIsDialogOpen(false);
+        .then(() => {
+          setOpen(false);
           updateUsers();
           resetInputs();
 
 
         })
-        .catch(error => {
-          setIsDialogOpen(false);
+        .catch(() => {
+          setOpen(false);
         });
     }
   };
 
-  const handleChancelClick = () => {
-    setIsDialogOpen(false);
-  };
 
   return (
     <Dialog
-      open={isDialogOpen}
+      open={open}
+      onClose={handleChancelClick}
       sx={{
         '& .MuiPaper-root': {
           width: '100%',
@@ -102,8 +109,12 @@ export default function UserAddDialog({
           borderRadius: '16px',
         },
       }}
+      aria-labelledby="alert-dialog-title"
+      aria-describedby="alert-dialog-description"
     >
-      <DialogTitle sx={{ padding: '24px' }}>部員を追加</DialogTitle>
+      <DialogTitle id="alert-dialog-title" sx={{ padding: '24px' }}>
+        編集
+      </DialogTitle>
       <form onSubmit={handleClick}>
         <DialogContent sx={{ paddingTop: '10px!important' }}>
           <Stack direction="column" gap="24px">
@@ -119,7 +130,7 @@ export default function UserAddDialog({
                   label="姓"
                   type="text"
                   variant="outlined"
-                  value={lastName}
+                  value={inputLastName}
                   onChange={handleLastNameChange}
                   color="grey"
                   fullWidth
@@ -130,7 +141,7 @@ export default function UserAddDialog({
                   label="名"
                   type="text"
                   variant="outlined"
-                  value={firstName}
+                  value={inputFirstName}
                   onChange={handleFirstNameChange}
                   color="grey"
                   fullWidth
@@ -144,7 +155,7 @@ export default function UserAddDialog({
                 label="学校のメールアドレス"
                 type="email"
                 variant="outlined"
-                value={email}
+                value={inputEmail}
                 onChange={handleEmailChange}
                 color="grey"
                 fullWidth
@@ -157,7 +168,7 @@ export default function UserAddDialog({
                 labelId="add-member-part-label"
                 label="パート"
                 defaultValue=""
-                value={part}
+                value={inputPart}
                 onChange={handlePartChange}
                 color="grey"
                 fullWidth
@@ -177,7 +188,7 @@ export default function UserAddDialog({
                 labelId="add-member-grade-label"
                 label="学年"
                 defaultValue=""
-                value={grade}
+                value={inputGrade}
                 onChange={handleGradeChange}
                 color="grey"
                 fullWidth
@@ -195,15 +206,22 @@ export default function UserAddDialog({
         </DialogContent>
 
         <DialogActions sx={{ p: '24px' }}>
-          <Button variant="outlined" color="inherit" onClick={handleChancelClick}>キャンセル</Button>
+          <Button variant="outlined" color="inherit" onClick={handleChancelClick} >キャンセル</Button>
           <Button variant="contained" color="inherit" type="submit">保存</Button>
         </DialogActions>
+
       </form>
     </Dialog>
-  );
+  )
 }
-UserAddDialog.propTypes = {
-  isDialogOpen: PropTypes.bool,
-  setIsDialogOpen: PropTypes.func,
+
+UserEditDialog.propTypes = {
+  open: PropTypes.bool,
+  setOpen: PropTypes.func,
+  email: PropTypes.string,
+  lastName: PropTypes.string,
+  firstName: PropTypes.string,
+  part: PropTypes.string,
+  grade: PropTypes.string,
   updateUsers: PropTypes.func,
 };

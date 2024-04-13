@@ -134,13 +134,11 @@ export default function FormView() {
               {backToDashboardRef.current}
               <Card sx={{p: 5}}>
 
-
-
                 <Typography variant="h3" sx={{fontSize: "2rem!important"}}>出欠フォーム</Typography>
 
                 <Typography variant="body2" sx={{color: "initial", mt: 2}}>
                   パートの代表者は部活動があった日の出欠を入力してください。<br />
-                  間違えた回答を送信してしまった場合は、もう一度正しい回答を送信してください。{date}{part}{grade}
+                  間違えた回答を送信してしまった場合は、もう一度正しい回答を送信してください。
                 </Typography>
 
                 <Stepper
@@ -198,7 +196,7 @@ export default function FormView() {
                       を選択してください。
                     </Alert>
 
-                    <AttendanceSelect />
+                    <AttendanceSelect part={part} grade={grade} />
 
                     <Stack direction="row" justifyContent="end">
                       <Button variant="outlined" onClick={handlePrev} sx={{mr: 1}}>戻る</Button>
