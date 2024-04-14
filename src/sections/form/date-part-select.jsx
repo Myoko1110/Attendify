@@ -1,4 +1,3 @@
-import { useEffect } from 'react';
 import PropTypes from 'prop-types';
 
 import Box from '@mui/material/Box';
@@ -20,10 +19,6 @@ export default function DatePartSelect({ date, part, grade, setDate, setPart, se
   const handleGradeChange = (e) => {
     setGrade(e.target.value);
   };
-
-  useEffect(() => {
-    console.log(date);
-  }, [date]);
 
   return (
     <Box sx={{ mt: 6, mx: 'auto' }}>

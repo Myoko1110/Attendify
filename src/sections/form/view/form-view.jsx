@@ -107,7 +107,6 @@ export default function FormView() {
   };
 
   const handleSend = () => {
-    console.log(attendances);
     let hasError = false;
 
     Object.keys(attendances).forEach((email) => {
@@ -117,12 +116,16 @@ export default function FormView() {
       }
     });
 
+    console.log(hasError);
+
     if (!hasError) {
       const { session, userId } = cookies;
 
       axios
         .post('http://localhost:8000/api/v1/attendance/', {
           attendances,
+          part,
+          grade,
           date: dayjs(date).unix(),
           userId: userId.replace('_', ''),
           token: session,
@@ -264,22 +267,14 @@ export default function FormView() {
                         </Stack>
                       </>
                     ) : (
-                      <>
-                        <AttendanceSelect
-                          part={part}
-                          grade={grade}
-                          setAttendances={setAttendances}
-                        />
-
-                        <Stack direction="row" justifyContent="end" gap={1}>
-                          <Button variant="outlined" onClick={handlePrev}>
-                            戻る
-                          </Button>
-                          <Button variant="contained" onClick={handleSend}>
-                            送信
-                          </Button>
-                        </Stack>
-                      </>
+                      <AttendanceSelect
+                        date={date}
+                        part={part}
+                        grade={grade}
+                        setAttendances={setAttendances}
+                        handlePrev={handlePrev}
+                        handleSend={handleSend}
+                      />
                     )}
                   </>
                 ) : (
