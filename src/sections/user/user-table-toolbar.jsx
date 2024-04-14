@@ -14,13 +14,19 @@ import UsersDeleteDialog from './users-delete-dialog';
 
 // ----------------------------------------------------------------------
 
-export default function UserTableToolbar({ selected, setSelected, filterName, onFilterName, updateUsers }) {
+export default function UserTableToolbar({
+  selected,
+  setSelected,
+  filterName,
+  onFilterName,
+  updateUsers,
+}) {
   const [open, setOpen] = useState(false);
 
   const handleClick = () => {
     setOpen(true);
-  }
-  
+  };
+
   return (
     <Toolbar
       sx={{
@@ -64,7 +70,7 @@ export default function UserTableToolbar({ selected, setSelected, filterName, on
       <UsersDeleteDialog
         open={open}
         setOpen={setOpen}
-        emails={selected}
+        ids={selected}
         updateUsers={updateUsers}
         setSelected={setSelected}
       />

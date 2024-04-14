@@ -1,71 +1,83 @@
-import {useCookies} from "react-cookie";
-import {useRef, useState, useEffect} from "react";
+import axios from 'axios';
+import dayjs from 'dayjs';
+import { useCookies } from 'react-cookie';
+import { useRef, useState, useEffect } from 'react';
 
 import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
-import Link from "@mui/material/Link";
+import Link from '@mui/material/Link';
 import Stack from '@mui/material/Stack';
-import Button from "@mui/material/Button";
-import Container from "@mui/material/Container";
+import Button from '@mui/material/Button';
+import Container from '@mui/material/Container';
 import Typography from '@mui/material/Typography';
-import {alpha, useTheme} from '@mui/material/styles';
+import { alpha, useTheme } from '@mui/material/styles';
 import { Step, Alert, Stepper, StepLabel } from '@mui/material';
 
-import {useRouter} from 'src/routes/hooks';
+import { useRouter } from 'src/routes/hooks';
 
-import {bgGradient} from 'src/theme/css';
+import { useResponsive } from 'src/hooks/use-responsive';
+
+import { bgGradient } from 'src/theme/css';
 
 import Logo from 'src/components/logo';
 
-import DatePartSelect from "../date-part-select";
-import Iconify from "../../../components/iconify";
-import {checkSession} from "../../../utils/session";
-import AttendanceSelect from "../attendance-inputs";
+import FormSuccess from '../form-success';
+import DatePartSelect from '../date-part-select';
+import Iconify from '../../../components/iconify';
+import AttendanceSelect from '../attendance-inputs';
+import { checkSession } from '../../../utils/session';
 
 // ----------------------------------------------------------------------
 
 export default function FormView() {
   const router = useRouter();
 
-  const [cookies,] = useCookies(["status", ""]);
+  const [cookies] = useCookies(['']);
   const backToDashboardRef = useRef(null);
 
   const [isReady, setIsReady] = useState(false);
   const [activeStep, setActiveStep] = useState(0);
   const [error, setError] = useState(null);
 
-  const [date, setDate] = useState("");
-  const [part, setPart] = useState("");
+  const [date, setDate] = useState('');
+  const [part, setPart] = useState('');
   const [grade, setGrade] = useState(null);
 
-  // const [attendances, setAttendances] = useState([]);
+  const [attendances, setAttendances] = useState({});
+  const [isSuccess, setIsSuccess] = useState(null);
+
+  const lgUp = useResponsive('up', 'lg');
 
   useEffect(() => {
     if (cookies.session && cookies.userId) {
-      const {session, userId} = cookies;
+      const { session, userId } = cookies;
 
       const [status, type] = checkSession(userId, session);
       if (!status) {
-        router.replace("/login");
+        router.replace('/login');
       }
       setIsReady(true);
 
-      if (type === "executive") {
+      if (type === 'executive') {
         backToDashboardRef.current = (
-          <Link href="/" sx={{
-            color: "initial",
-            textDecoration: "none",
-            display: "block",
-            width: "fit-content",
-            px: 1.5,
-            py: .5,
-            mb: 1,
-            borderRadius: 1,
-            '&:hover': {
-              backgroundColor: "rgba(100, 100, 100, .1)"
-            }
-          }} alignItems="center">
-            <Stack direction="row" sx={{width: "fit-content",}}>
+          <Link
+            href="/"
+            sx={{
+              color: 'initial',
+              textDecoration: 'none',
+              display: 'block',
+              width: 'fit-content',
+              px: 1.5,
+              py: 0.5,
+              mb: 1,
+              borderRadius: 1,
+              '&:hover': {
+                backgroundColor: 'rgba(100, 100, 100, .1)',
+              },
+            }}
+            alignItems="center"
+          >
+            <Stack direction="row" sx={{ width: 'fit-content' }}>
               <Iconify icon="bx:arrow-back" />
               <Typography variant="body2" sx={{ ml: 1 }}>
                 ダッシュボードへ戻る
@@ -74,20 +86,15 @@ export default function FormView() {
           </Link>
         );
       }
-
     } else {
-      router.replace("/login");
+      router.replace('/login');
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const handleNext = () => {
     if (!(date && part && grade)) {
-      setError(
-        <Alert severity="error" sx={{mt: 6}}>
-          未選択の項目があります。
-        </Alert>
-      );
+      setError(true);
       window.scrollTo(0, 0);
     } else {
       setActiveStep((prevActiveStep) => prevActiveStep + 1);
@@ -96,6 +103,37 @@ export default function FormView() {
   };
   const handlePrev = () => {
     setActiveStep((prevActiveStep) => prevActiveStep - 1);
+    setError(null);
+  };
+
+  const handleSend = () => {
+    console.log(attendances);
+    let hasError = false;
+
+    Object.keys(attendances).forEach((email) => {
+      if (!attendances[email]) {
+        setError(true);
+        hasError = true;
+      }
+    });
+
+    if (!hasError) {
+      const { session, userId } = cookies;
+
+      axios
+        .post('http://localhost:8000/api/v1/attendance/', {
+          attendances,
+          date: dayjs(date).unix(),
+          userId: userId.replace('_', ''),
+          token: session,
+        })
+        .then(() => {
+          setIsSuccess(true);
+        })
+        .catch(() => {
+          setIsSuccess(false);
+        });
+    }
   };
 
   const theme = useTheme();
@@ -116,95 +154,137 @@ export default function FormView() {
             disabledLink
             sx={{
               position: 'fixed',
-              top: {xs: 16, md: 24},
-              left: {xs: 16, md: 24},
+              top: { xs: 16, md: 24 },
+              left: { xs: 16, md: 24 },
               zIndex: 2,
             }}
           />
 
-          <Stack alignItems="center" justifyContent="start" sx={{height: 1, p: 1}}>
+          <Stack
+            alignItems="center"
+            justifyContent="start"
+            sx={{
+              height: 1,
+              p: 1,
+            }}
+          >
             <Container
               sx={{
-                maxWidth: {xm: 800, sm: 800},
+                maxWidth: { xm: 800, sm: 800 },
                 mt: 10,
                 px: 1,
                 pb: 1,
               }}
             >
               {backToDashboardRef.current}
-              <Card sx={{p: 5}}>
-
-                <Typography variant="h3" sx={{fontSize: "2rem!important"}}>出欠フォーム</Typography>
-
-                <Typography variant="body2" sx={{color: "initial", mt: 2}}>
-                  パートの代表者は部活動があった日の出欠を入力してください。<br />
-                  間違えた回答を送信してしまった場合は、もう一度正しい回答を送信してください。
+              <Card
+                sx={{
+                  ...(lgUp
+                    ? {
+                        p: 5,
+                      }
+                    : {
+                        p: 3,
+                      }),
+                }}
+              >
+                <Typography variant="h3" sx={{ fontSize: '2rem!important' }}>
+                  出欠フォーム
                 </Typography>
 
-                <Stepper
-                  alternativeLabel
-                  activeStep={activeStep}
-                  sx={{
-                  mt: 4,
-                  '& .MuiStepLabel-label': {
-                    fontWeight: "400!important",
-                    mt: "8px!important",
-                  },
-                }}>
-                  <Step key="1">
-                    <StepLabel>日付・パート</StepLabel>
-                  </Step>
-                  <Step key="2">
-                    <StepLabel>出欠情報</StepLabel>
-                  </Step>
-                </Stepper>
-
-                {error}
-
-                {activeStep === 0 ? (
+                {isSuccess === null ? (
                   <>
+                    <Typography variant="body2" sx={{ color: 'initial', mt: 2 }}>
+                      パートの代表者は部活動があった日の出欠を入力してください。
+                      <br />
+                      間違えた回答を送信してしまった場合は、もう一度正しい回答を送信してください。
+                    </Typography>
 
-                    <DatePartSelect
-                      date={date}
-                      part={part}
-                      grade={grade}
-                      setDate={setDate}
-                      setPart={setPart}
-                      setGrade={setGrade}
-                    />
+                    <Stepper
+                      alternativeLabel
+                      activeStep={activeStep}
+                      sx={{
+                        mt: 4,
+                        '& .MuiStepLabel-label': {
+                          fontWeight: '400!important',
+                          mt: '8px!important',
+                        },
+                      }}
+                    >
+                      <Step key="1">
+                        <StepLabel>日付・パート</StepLabel>
+                      </Step>
+                      <Step key="2">
+                        <StepLabel>出欠情報</StepLabel>
+                      </Step>
+                    </Stepper>
 
-                    <Stack direction="row" justifyContent="end">
-                      <Button variant="contained" onClick={handleNext}>次へ</Button>
-                    </Stack>
+                    {error ? (
+                      <Alert severity="error" sx={{ mt: 6 }}>
+                        未選択の項目があります。
+                      </Alert>
+                    ) : (
+                      activeStep === 1 && (
+                        <Alert severity="info" sx={{ mt: 6 }}>
+                          委員会・係などで来れなかった場合、講習で遅刻した場合でも
+                          <Box
+                            sx={{
+                              backgroundColor: '#ffffff',
+                              px: 1,
+                              color: '#212B36',
+                              width: 'fit-content',
+                              display: 'inline-block',
+                              mx: 0.5,
+                              border: '1px solid #e3e3e3',
+                              borderRadius: '4px',
+                            }}
+                          >
+                            講習
+                          </Box>
+                          を選択してください。
+                        </Alert>
+                      )
+                    )}
+
+                    {activeStep === 0 ? (
+                      <>
+                        <DatePartSelect
+                          date={date}
+                          part={part}
+                          grade={grade}
+                          setDate={setDate}
+                          setPart={setPart}
+                          setGrade={setGrade}
+                        />
+
+                        <Stack direction="row" justifyContent="end">
+                          <Button variant="contained" onClick={handleNext}>
+                            次へ
+                          </Button>
+                        </Stack>
+                      </>
+                    ) : (
+                      <>
+                        <AttendanceSelect
+                          part={part}
+                          grade={grade}
+                          setAttendances={setAttendances}
+                        />
+
+                        <Stack direction="row" justifyContent="end" gap={1}>
+                          <Button variant="outlined" onClick={handlePrev}>
+                            戻る
+                          </Button>
+                          <Button variant="contained" onClick={handleSend}>
+                            送信
+                          </Button>
+                        </Stack>
+                      </>
+                    )}
                   </>
                 ) : (
-                  <>
-                    <Alert severity="info" sx={{mt: 6}}>
-                      委員会・係などで来れなかった場合、講習で遅刻した場合でも
-                      <Box sx={{
-                      backgroundColor: "#ffffff",
-                      px: 1,
-                      color: "#212B36",
-                      width: "fit-content",
-                      display: "inline-block",
-                      mx: .5,
-                      border: "1px solid #e3e3e3",
-                      borderRadius: "4px",
-                    }}>
-                        講習
-                      </Box>
-                      を選択してください。
-                    </Alert>
-
-                    <AttendanceSelect part={part} grade={grade} />
-
-                    <Stack direction="row" justifyContent="end">
-                      <Button variant="outlined" onClick={handlePrev} sx={{mr: 1}}>戻る</Button>
-                      <Button variant="contained" onClick={handleNext}>送信</Button>
-                    </Stack>
-                  </>
+                  <FormSuccess isSuccess={isSuccess} />
                 )}
-
               </Card>
             </Container>
           </Stack>

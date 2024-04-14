@@ -33,6 +33,7 @@
     "apexcharts": "^3.43.0",
     "axios": "^1.6.8",
     "date-fns": "^2.30.0",
+    "dayjs": "^1.11.10",
     "history": "^5.3.0",
     "lodash": "^4.17.21",
     "numeral": "^2.0.6",

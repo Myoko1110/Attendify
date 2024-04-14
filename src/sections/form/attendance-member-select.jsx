@@ -1,27 +1,20 @@
-import { useState } from 'react';
 import PropTypes from 'prop-types';
+import { useState, useEffect } from 'react';
 
 import Stack from '@mui/material/Stack';
 import MenuItem from '@mui/material/MenuItem';
 import { Select, FormLabel, TextField, FormControl } from '@mui/material';
 
-export default function AttendanceMemberSelect({
-  email,
-  lastName,
-  firstName,
-                                               }) {
+export default function AttendanceMemberSelect({ id, lastName, firstName, setAttendances }) {
   const [isOther, setIsOther] = useState(false);
-  const [attendance, setAttendance] = useState("");
-  const [attendanceValue, setAttendanceValue] = useState("");
-  const [otherValue, setOtherValue] = useState("");
+  const [attendanceValue, setAttendanceValue] = useState('');
+  const [otherValue, setOtherValue] = useState('');
 
   const handleChange = (e) => {
     setAttendanceValue(e.target.value);
-    if (e.target.value === "その他") {
+    if (e.target.value === 'その他') {
       setIsOther(true);
-      setAttendance("");
     } else {
-      setIsOther(false);
       setAttendance(e.target.value);
     }
   };
@@ -31,13 +24,25 @@ export default function AttendanceMemberSelect({
     if (isOther) {
       setAttendance(e.target.value);
     }
-  }
+  };
 
-  console.log(attendance)
+  const setAttendance = (value) => {
+    setAttendances((pre) => ({
+      ...pre,
+      [id]: value,
+    }));
+  };
+
+  useEffect(() => {
+    setAttendance(null);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
     <FormControl fullWidth sx={{ my: 1 }}>
-      <FormLabel sx={{fontSize: "15px"}}>{lastName} {firstName}</FormLabel>
+      <FormLabel sx={{ fontSize: '15px' }}>
+        {lastName} {firstName}
+      </FormLabel>
       <Stack direction="row" alignItems="center">
         <Select
           id="date"
@@ -48,7 +53,9 @@ export default function AttendanceMemberSelect({
           value={attendanceValue}
           onChange={handleChange}
         >
-          <MenuItem value="" disabled selected>選択</MenuItem>
+          <MenuItem value="" disabled selected>
+            選択
+          </MenuItem>
           <MenuItem value="出席">出席</MenuItem>
           <MenuItem value="欠席">欠席</MenuItem>
           <MenuItem value="遅刻">遅刻</MenuItem>
@@ -62,8 +69,8 @@ export default function AttendanceMemberSelect({
           <TextField
             type="text"
             variant="standard"
-            InputLabelProps={{shrink: true}}
-            sx={{ml: 2, fontSize: "16px"}}
+            InputLabelProps={{ shrink: true }}
+            sx={{ ml: 2, fontSize: '16px' }}
             value={otherValue}
             onChange={handleFieldChange}
           />
@@ -74,7 +81,8 @@ export default function AttendanceMemberSelect({
 }
 
 AttendanceMemberSelect.propTypes = {
-  email: PropTypes.string,
+  id: PropTypes.number,
   lastName: PropTypes.string,
   firstName: PropTypes.string,
-}
+  setAttendances: PropTypes.func,
+};

@@ -5,14 +5,7 @@ import { useCookies } from 'react-cookie';
 import Button from '@mui/material/Button';
 import { Dialog, DialogTitle, DialogActions } from '@mui/material';
 
-export default function UsersDeleteDialog({
-                                           open,
-                                           setOpen,
-                                           emails,
-                                           updateUsers,
-                                            setSelected,
-                                         },
-) {
+export default function UsersDeleteDialog({ open, setOpen, ids, updateUsers, setSelected }) {
   const [cookies] = useCookies(['']);
 
   const handleClose = () => {
@@ -21,18 +14,18 @@ export default function UsersDeleteDialog({
 
   const handleDeleteClick = () => {
     const { session, userId } = cookies;
-    axios.delete('http://localhost:8000/api/v1/member/', {
-      data: {
-        emails,
-        userId: userId.replace('_', ''),
-        token: session,
-      },
-    })
+    axios
+      .delete('http://localhost:8000/api/v1/member/', {
+        data: {
+          ids,
+          userId: userId.replace('_', ''),
+          token: session,
+        },
+      })
       .then(() => {
         setOpen(false);
         updateUsers();
         setSelected([]);
-
       })
       .catch(() => {
         setOpen(false);
@@ -57,8 +50,12 @@ export default function UsersDeleteDialog({
         本当に削除しますか？
       </DialogTitle>
       <DialogActions sx={{ p: '24px' }}>
-        <Button onClick={handleClose} variant="outlined" color="inherit">キャンセル</Button>
-        <Button onClick={handleDeleteClick} variant="contained" color="error" autoFocus>削除</Button>
+        <Button onClick={handleClose} variant="outlined" color="inherit">
+          キャンセル
+        </Button>
+        <Button onClick={handleDeleteClick} variant="contained" color="error" autoFocus>
+          削除
+        </Button>
       </DialogActions>
     </Dialog>
   );
@@ -67,7 +64,7 @@ export default function UsersDeleteDialog({
 UsersDeleteDialog.propTypes = {
   open: PropTypes.bool,
   setOpen: PropTypes.func,
-  emails: PropTypes.array,
+  ids: PropTypes.array,
   updateUsers: PropTypes.func,
   setSelected: PropTypes.func,
 };

@@ -19,16 +19,16 @@ import UserDeleteDialog from './user-delete-dialog';
 // ----------------------------------------------------------------------
 
 export default function UserTableRow({
-                                       selected,
-                                       lastName,
-                                       firstName,
-                                       part,
-                                       grade,
-                                       rate,
-                                       email,
-                                       handleClick,
-                                       updateUsers,
-                                     }) {
+  selected,
+  id,
+  lastName,
+  firstName,
+  part,
+  grade,
+  rate,
+  handleClick,
+  updateUsers,
+}) {
   const [open, setOpen] = useState(false);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [editDialogOpen, setEditDialogOpen] = useState(false);
@@ -70,40 +70,38 @@ export default function UserTableRow({
         <TableCell align="center">
           <Grid container alignItems="center" justify="spaceBetween">
             <Grid item xs={6}>
-              {
-                rate >= 80
-                  ? <LinearProgress
-                    variant="determinate"
-                    value={rate}
-                    sx={{
-                      height: '10px',
-                      backgroundColor: 'success.lighter',
-                      borderRadius: '100px',
-                      '& .MuiLinearProgress-bar': {
-                        backgroundColor: 'success.main',
-                      },
-
-                    }} />
-                  : <LinearProgress
-                    variant="determinate"
-                    value={rate}
-                    sx={{
-                      height: '10px',
-                      backgroundColor: 'warning.lighter',
-                      borderRadius: '100px',
-                      '& .MuiLinearProgress-bar': {
-                        backgroundColor: 'warning.main',
-                      },
-                    }} />
-              }
-
+              {rate >= 80 ? (
+                <LinearProgress
+                  variant="determinate"
+                  value={rate}
+                  sx={{
+                    height: '10px',
+                    backgroundColor: 'success.lighter',
+                    borderRadius: '100px',
+                    '& .MuiLinearProgress-bar': {
+                      backgroundColor: 'success.main',
+                    },
+                  }}
+                />
+              ) : (
+                <LinearProgress
+                  variant="determinate"
+                  value={rate}
+                  sx={{
+                    height: '10px',
+                    backgroundColor: 'warning.lighter',
+                    borderRadius: '100px',
+                    '& .MuiLinearProgress-bar': {
+                      backgroundColor: 'warning.main',
+                    },
+                  }}
+                />
+              )}
             </Grid>
             <Grid item xs={6}>
               <Typography variant="body2">{rate.toFixed(2)}%</Typography>
-
             </Grid>
           </Grid>
-
         </TableCell>
 
         <TableCell align="right">
@@ -136,7 +134,7 @@ export default function UserTableRow({
       <UserDeleteDialog
         open={deleteDialogOpen}
         setOpen={setDeleteDialogOpen}
-        email={email}
+        id={id}
         lastName={lastName}
         firstName={firstName}
         updateUsers={updateUsers}
@@ -144,7 +142,7 @@ export default function UserTableRow({
       <UserEditDialog
         open={editDialogOpen}
         setOpen={setEditDialogOpen}
-        email={email}
+        id={id}
         lastName={lastName}
         firstName={firstName}
         part={part}
@@ -157,12 +155,12 @@ export default function UserTableRow({
 
 UserTableRow.propTypes = {
   handleClick: PropTypes.func,
+  id: PropTypes.number,
   part: PropTypes.any,
   lastName: PropTypes.any,
   firstName: PropTypes.any,
   grade: PropTypes.any,
   rate: PropTypes.number,
-  email: PropTypes.string,
   selected: PropTypes.any,
   updateUsers: PropTypes.func,
 };

@@ -3,17 +3,15 @@ import PropTypes from 'prop-types';
 import { useCookies } from 'react-cookie';
 
 import Button from '@mui/material/Button';
-import { Dialog, DialogTitle, DialogActions, DialogContent, DialogContentText } from '@mui/material';
+import {
+  Dialog,
+  DialogTitle,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+} from '@mui/material';
 
-export default function UserDeleteDialog({
-                                           open,
-                                           setOpen,
-                                           email,
-                                           lastName,
-                                           firstName,
-                                           updateUsers,
-                                         },
-) {
+export default function UserDeleteDialog({ open, setOpen, id, lastName, firstName, updateUsers }) {
   const [cookies] = useCookies(['']);
 
   const handleClose = () => {
@@ -22,17 +20,17 @@ export default function UserDeleteDialog({
 
   const handleDeleteClick = () => {
     const { session, userId } = cookies;
-    axios.delete('http://localhost:8000/api/v1/member/', {
-      data: {
-        emails: [email],
-        userId: userId.replace('_', ''),
-        token: session,
-      },
-    })
+    axios
+      .delete('http://localhost:8000/api/v1/member/', {
+        data: {
+          ids: [id],
+          userId: userId.replace('_', ''),
+          token: session,
+        },
+      })
       .then(() => {
         setOpen(false);
         updateUsers();
-
       })
       .catch(() => {
         setOpen(false);
@@ -62,8 +60,12 @@ export default function UserDeleteDialog({
         </DialogContentText>
       </DialogContent>
       <DialogActions sx={{ p: '24px' }}>
-        <Button onClick={handleClose} variant="outlined" color="inherit">キャンセル</Button>
-        <Button onClick={handleDeleteClick} variant="contained" color="error" autoFocus>削除</Button>
+        <Button onClick={handleClose} variant="outlined" color="inherit">
+          キャンセル
+        </Button>
+        <Button onClick={handleDeleteClick} variant="contained" color="error" autoFocus>
+          削除
+        </Button>
       </DialogActions>
     </Dialog>
   );
@@ -72,7 +74,7 @@ export default function UserDeleteDialog({
 UserDeleteDialog.propTypes = {
   open: PropTypes.bool,
   setOpen: PropTypes.func,
-  email: PropTypes.string,
+  id: PropTypes.number,
   lastName: PropTypes.string,
   firstName: PropTypes.string,
   updateUsers: PropTypes.func,

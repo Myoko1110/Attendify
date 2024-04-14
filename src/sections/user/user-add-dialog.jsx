@@ -14,19 +14,15 @@ import {
   InputLabel,
   DialogTitle,
   FormControl,
-  DialogContent, DialogActions,
+  DialogContent,
+  DialogActions,
 } from '@mui/material';
 
 import { parts } from '../../_mock/part';
 
-export default function UserAddDialog({
-                                        isDialogOpen,
-                                        setIsDialogOpen,
-                                        updateUsers,
-                                      }) {
+export default function UserAddDialog({ isDialogOpen, setIsDialogOpen, updateUsers }) {
   const [lastName, setLastName] = useState('');
   const [firstName, setFirstName] = useState('');
-  const [email, setEmail] = useState('');
   const [part, setPart] = useState('');
   const [grade, setGrade] = useState('');
 
@@ -40,9 +36,6 @@ export default function UserAddDialog({
   const handleFirstNameChange = (e) => {
     setFirstName(e.target.value);
   };
-  const handleEmailChange = (e) => {
-    setEmail(e.target.value);
-  };
   const handlePartChange = (e) => {
     setPart(e.target.value);
   };
@@ -53,7 +46,6 @@ export default function UserAddDialog({
   const resetInputs = () => {
     setLastName('');
     setFirstName('');
-    setEmail('');
     setPart('');
     setGrade('');
     setIsError(false);
@@ -61,28 +53,25 @@ export default function UserAddDialog({
 
   const handleClick = (e) => {
     e.preventDefault();
-    if (!(lastName && firstName && email && part && grade)) {
+    if (!(lastName && firstName && part && grade)) {
       setIsError(true);
     } else {
-
       const { session, userId } = cookies;
-      axios.post('http://localhost:8000/api/v1/member/', {
-        lastName,
-        firstName,
-        email,
-        part,
-        grade,
-        userId: userId.replace('_', ''),
-        token: session,
-      })
-        .then(response => {
+      axios
+        .post('http://localhost:8000/api/v1/member/', {
+          lastName,
+          firstName,
+          part,
+          grade,
+          userId: userId.replace('_', ''),
+          token: session,
+        })
+        .then((response) => {
           setIsDialogOpen(false);
           updateUsers();
           resetInputs();
-
-
         })
-        .catch(error => {
+        .catch((error) => {
           setIsDialogOpen(false);
         });
     }
@@ -107,11 +96,7 @@ export default function UserAddDialog({
       <form onSubmit={handleClick}>
         <DialogContent sx={{ paddingTop: '10px!important' }}>
           <Stack direction="column" gap="24px">
-            {isError && (
-              <Alert severity="error">
-                未入力の項目があります。
-              </Alert>
-            )}
+            {isError && <Alert severity="error">未入力の項目があります。</Alert>}
             <FormControl>
               <Stack direction="row">
                 <TextField
@@ -123,7 +108,7 @@ export default function UserAddDialog({
                   onChange={handleLastNameChange}
                   color="grey"
                   fullWidth
-                  sx={{ mr: .5 }}
+                  sx={{ mr: 0.5 }}
                 />
                 <TextField
                   id="name"
@@ -134,24 +119,14 @@ export default function UserAddDialog({
                   onChange={handleFirstNameChange}
                   color="grey"
                   fullWidth
-                  sx={{ ml: .5 }}
+                  sx={{ ml: 0.5 }}
                 />
               </Stack>
             </FormControl>
             <FormControl>
-              <TextField
-                id="email"
-                label="学校のメールアドレス"
-                type="email"
-                variant="outlined"
-                value={email}
-                onChange={handleEmailChange}
-                color="grey"
-                fullWidth
-              />
-            </FormControl>
-            <FormControl>
-              <InputLabel id="add-member-part-label" color="grey">パート</InputLabel>
+              <InputLabel id="add-member-part-label" color="grey">
+                パート
+              </InputLabel>
               <Select
                 id="part"
                 labelId="add-member-part-label"
@@ -162,16 +137,20 @@ export default function UserAddDialog({
                 color="grey"
                 fullWidth
               >
-                <MenuItem value="" disabled>選択</MenuItem>
-                {
-                  parts.map((row) => (
-                    <MenuItem value={row.name} key={row.name}>{row.name}</MenuItem>
-                  ))
-                }
+                <MenuItem value="" disabled>
+                  選択
+                </MenuItem>
+                {parts.map((row) => (
+                  <MenuItem value={row.name} key={row.name}>
+                    {row.name}
+                  </MenuItem>
+                ))}
               </Select>
             </FormControl>
             <FormControl>
-              <InputLabel id="add-member-grade-label" color="grey">学年</InputLabel>
+              <InputLabel id="add-member-grade-label" color="grey">
+                学年
+              </InputLabel>
               <Select
                 id="part"
                 labelId="add-member-grade-label"
@@ -182,7 +161,9 @@ export default function UserAddDialog({
                 color="grey"
                 fullWidth
               >
-                <MenuItem value="" disabled>選択</MenuItem>
+                <MenuItem value="" disabled>
+                  選択
+                </MenuItem>
                 <MenuItem value="Junior1">中1</MenuItem>
                 <MenuItem value="Junior2">中2</MenuItem>
                 <MenuItem value="Junior3">中3</MenuItem>
@@ -195,8 +176,12 @@ export default function UserAddDialog({
         </DialogContent>
 
         <DialogActions sx={{ p: '24px' }}>
-          <Button variant="outlined" color="inherit" onClick={handleChancelClick}>キャンセル</Button>
-          <Button variant="contained" color="inherit" type="submit">保存</Button>
+          <Button variant="outlined" color="inherit" onClick={handleChancelClick}>
+            キャンセル
+          </Button>
+          <Button variant="contained" color="inherit" type="submit">
+            保存
+          </Button>
         </DialogActions>
       </form>
     </Dialog>

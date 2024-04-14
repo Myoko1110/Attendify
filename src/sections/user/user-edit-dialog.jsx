@@ -1,7 +1,7 @@
 import axios from 'axios';
-import { useState } from 'react';
 import PropTypes from 'prop-types';
 import { useCookies } from 'react-cookie';
+import { useState, useEffect } from 'react';
 
 import Button from '@mui/material/Button';
 import MenuItem from '@mui/material/MenuItem';
@@ -12,28 +12,28 @@ import {
   Select,
   TextField,
   InputLabel,
-  DialogTitle, FormControl, DialogActions, DialogContent,
+  DialogTitle,
+  FormControl,
+  DialogActions,
+  DialogContent,
 } from '@mui/material';
 
 import { parts } from '../../_mock/part';
 
 export default function UserEditDialog({
-                                         open,
-                                         setOpen,
-                                         email,
-                                         lastName,
-                                         firstName,
-                                         part,
-                                         grade,
-                                         updateUsers,
-                                       },
-) {
+  open,
+  setOpen,
+  id,
+  lastName,
+  firstName,
+  part,
+  grade,
+  updateUsers,
+}) {
   const [inputLastName, setLastName] = useState(lastName);
   const [inputFirstName, setFirstName] = useState(firstName);
-  const [inputEmail, setEmail] = useState(email);
   const [inputPart, setPart] = useState(part);
   const [inputGrade, setGrade] = useState(grade);
-
   const [isError, setIsError] = useState(false);
 
   const [cookies] = useCookies(['']);
@@ -43,9 +43,6 @@ export default function UserEditDialog({
   };
   const handleFirstNameChange = (e) => {
     setFirstName(e.target.value);
-  };
-  const handleEmailChange = (e) => {
-    setEmail(e.target.value);
   };
   const handlePartChange = (e) => {
     setPart(e.target.value);
@@ -58,38 +55,25 @@ export default function UserEditDialog({
     setOpen(false);
   };
 
-  const resetInputs = () => {
-    setLastName(lastName);
-    setFirstName(firstName);
-    setEmail(email);
-    setPart(part);
-    setGrade(grade);
-    setIsError(false);
-  };
-
   const handleClick = (e) => {
     e.preventDefault();
-    if (!(inputLastName && inputFirstName && inputEmail && inputPart && inputGrade)) {
+    if (!(inputLastName && inputFirstName && inputPart && inputGrade)) {
       setIsError(true);
     } else {
-
       const { session, userId } = cookies;
-      axios.put('http://localhost:8000/api/v1/member/', {
-        lastName: inputLastName,
-        firstName: inputFirstName,
-        email,
-        newEmail: inputEmail,
-        part: inputPart,
-        grade: inputGrade,
-        userId: userId.replace('_', ''),
-        token: session,
-      })
+      axios
+        .put('http://localhost:8000/api/v1/member/', {
+          lastName: inputLastName,
+          firstName: inputFirstName,
+          id,
+          part: inputPart,
+          grade: inputGrade,
+          userId: userId.replace('_', ''),
+          token: session,
+        })
         .then(() => {
           setOpen(false);
           updateUsers();
-          resetInputs();
-
-
         })
         .catch(() => {
           setOpen(false);
@@ -97,6 +81,13 @@ export default function UserEditDialog({
     }
   };
 
+  useEffect(() => {
+    setLastName(lastName);
+    setFirstName(firstName);
+    setPart(part);
+    setGrade(grade);
+    setIsError(false);
+  }, [lastName, firstName, part, grade]);
 
   return (
     <Dialog
@@ -118,11 +109,7 @@ export default function UserEditDialog({
       <form onSubmit={handleClick}>
         <DialogContent sx={{ paddingTop: '10px!important' }}>
           <Stack direction="column" gap="24px">
-            {isError && (
-              <Alert severity="error">
-                未入力の項目があります。
-              </Alert>
-            )}
+            {isError && <Alert severity="error">未入力の項目があります。</Alert>}
             <FormControl>
               <Stack direction="row">
                 <TextField
@@ -134,7 +121,7 @@ export default function UserEditDialog({
                   onChange={handleLastNameChange}
                   color="grey"
                   fullWidth
-                  sx={{ mr: .5 }}
+                  sx={{ mr: 0.5 }}
                 />
                 <TextField
                   id="name"
@@ -145,24 +132,14 @@ export default function UserEditDialog({
                   onChange={handleFirstNameChange}
                   color="grey"
                   fullWidth
-                  sx={{ ml: .5 }}
+                  sx={{ ml: 0.5 }}
                 />
               </Stack>
             </FormControl>
             <FormControl>
-              <TextField
-                id="email"
-                label="学校のメールアドレス"
-                type="email"
-                variant="outlined"
-                value={inputEmail}
-                onChange={handleEmailChange}
-                color="grey"
-                fullWidth
-              />
-            </FormControl>
-            <FormControl>
-              <InputLabel id="add-member-part-label" color="grey">パート</InputLabel>
+              <InputLabel id="add-member-part-label" color="grey">
+                パート
+              </InputLabel>
               <Select
                 id="part"
                 labelId="add-member-part-label"
@@ -173,16 +150,20 @@ export default function UserEditDialog({
                 color="grey"
                 fullWidth
               >
-                <MenuItem value="" disabled>選択</MenuItem>
-                {
-                  parts.map((row) => (
-                    <MenuItem value={row.name} key={row.name}>{row.name}</MenuItem>
-                  ))
-                }
+                <MenuItem value="" disabled>
+                  選択
+                </MenuItem>
+                {parts.map((row) => (
+                  <MenuItem value={row.name} key={row.name}>
+                    {row.name}
+                  </MenuItem>
+                ))}
               </Select>
             </FormControl>
             <FormControl>
-              <InputLabel id="add-member-grade-label" color="grey">学年</InputLabel>
+              <InputLabel id="add-member-grade-label" color="grey">
+                学年
+              </InputLabel>
               <Select
                 id="part"
                 labelId="add-member-grade-label"
@@ -193,7 +174,9 @@ export default function UserEditDialog({
                 color="grey"
                 fullWidth
               >
-                <MenuItem value="" disabled>選択</MenuItem>
+                <MenuItem value="" disabled>
+                  選択
+                </MenuItem>
                 <MenuItem value="Junior1">中1</MenuItem>
                 <MenuItem value="Junior2">中2</MenuItem>
                 <MenuItem value="Junior3">中3</MenuItem>
@@ -206,19 +189,22 @@ export default function UserEditDialog({
         </DialogContent>
 
         <DialogActions sx={{ p: '24px' }}>
-          <Button variant="outlined" color="inherit" onClick={handleChancelClick} >キャンセル</Button>
-          <Button variant="contained" color="inherit" type="submit">保存</Button>
+          <Button variant="outlined" color="inherit" onClick={handleChancelClick}>
+            キャンセル
+          </Button>
+          <Button variant="contained" color="inherit" type="submit">
+            保存
+          </Button>
         </DialogActions>
-
       </form>
     </Dialog>
-  )
+  );
 }
 
 UserEditDialog.propTypes = {
   open: PropTypes.bool,
   setOpen: PropTypes.func,
-  email: PropTypes.string,
+  id: PropTypes.number,
   lastName: PropTypes.string,
   firstName: PropTypes.string,
   part: PropTypes.string,
