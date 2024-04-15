@@ -24,7 +24,7 @@ import Logo from 'src/components/logo';
 import FormSuccess from '../form-success';
 import DatePartSelect from '../date-part-select';
 import Iconify from '../../../components/iconify';
-import AttendanceSelect from '../attendance-inputs';
+import AttendanceSelect from '../attendance-selects';
 import { checkSession } from '../../../utils/session';
 
 // ----------------------------------------------------------------------
@@ -37,7 +37,7 @@ export default function FormView() {
 
   const [isReady, setIsReady] = useState(false);
   const [activeStep, setActiveStep] = useState(0);
-  const [error, setError] = useState(null);
+  const [error, setError] = useState(false);
 
   const [date, setDate] = useState('');
   const [part, setPart] = useState('');
@@ -116,9 +116,8 @@ export default function FormView() {
       }
     });
 
-    console.log(hasError);
-
     if (!hasError) {
+      setError(false);
       const { session, userId } = cookies;
 
       axios
@@ -222,35 +221,13 @@ export default function FormView() {
                       </Step>
                     </Stepper>
 
-                    {error ? (
-                      <Alert severity="error" sx={{ mt: 6 }}>
-                        未選択の項目があります。
-                      </Alert>
-                    ) : (
-                      activeStep === 1 && (
-                        <Alert severity="info" sx={{ mt: 6 }}>
-                          委員会・係などで来れなかった場合、講習で遅刻した場合でも
-                          <Box
-                            sx={{
-                              backgroundColor: '#ffffff',
-                              px: 1,
-                              color: '#212B36',
-                              width: 'fit-content',
-                              display: 'inline-block',
-                              mx: 0.5,
-                              border: '1px solid #e3e3e3',
-                              borderRadius: '4px',
-                            }}
-                          >
-                            講習
-                          </Box>
-                          を選択してください。
-                        </Alert>
-                      )
-                    )}
-
                     {activeStep === 0 ? (
                       <>
+                        {error && (
+                          <Alert severity="error" sx={{ mt: 6 }}>
+                            未選択の項目があります。
+                          </Alert>
+                        )}
                         <DatePartSelect
                           date={date}
                           part={part}
@@ -274,6 +251,7 @@ export default function FormView() {
                         setAttendances={setAttendances}
                         handlePrev={handlePrev}
                         handleSend={handleSend}
+                        error={error}
                       />
                     )}
                   </>

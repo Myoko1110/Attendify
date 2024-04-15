@@ -29,6 +29,8 @@ export default function UserEditDialog({
   part,
   grade,
   updateUsers,
+  setEditSuccessOpen,
+  setEditErrorOpen,
 }) {
   const [inputLastName, setLastName] = useState(lastName);
   const [inputFirstName, setFirstName] = useState(firstName);
@@ -72,11 +74,13 @@ export default function UserEditDialog({
           token: session,
         })
         .then(() => {
-          setOpen(false);
           updateUsers();
+          setOpen(false);
+          setEditSuccessOpen(true);
         })
         .catch(() => {
           setOpen(false);
+          setEditErrorOpen(true);
         });
     }
   };
@@ -210,4 +214,6 @@ UserEditDialog.propTypes = {
   part: PropTypes.string,
   grade: PropTypes.string,
   updateUsers: PropTypes.func,
+  setEditSuccessOpen: PropTypes.func,
+  setEditErrorOpen: PropTypes.func,
 };

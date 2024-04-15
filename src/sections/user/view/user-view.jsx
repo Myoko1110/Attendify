@@ -16,6 +16,7 @@ import { getMembers } from 'src/_mock/user';
 import Iconify from 'src/components/iconify';
 import Scrollbar from 'src/components/scrollbar';
 
+import Snackbars from '../snackbers';
 import TableNoData from '../table-no-data';
 import UserTableRow from '../user-table-row';
 import UserTableHead from '../user-table-head';
@@ -37,6 +38,11 @@ export default function MembersPage() {
   const [rowsPerPage, setRowsPerPage] = useState(20);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [members, setMembers] = useState(getMembers(cookies.userId, cookies.session));
+
+  const [deleteSuccessOpen, setDeleteSuccessOpen] = useState(false);
+  const [deleteErrorOpen, setDeleteErrorOpen] = useState(false);
+  const [editSuccessOpen, setEditSuccessOpen] = useState(false);
+  const [editErrorOpen, setEditErrorOpen] = useState(false);
 
   if (!members) {
     return <p>エラー</p>;
@@ -133,6 +139,8 @@ export default function MembersPage() {
           filterName={filterName}
           onFilterName={handleFilterByName}
           updateUsers={updateUsers}
+          setDeleteSuccessOpen={setDeleteSuccessOpen}
+          setDeleteErrorOpen={setDeleteErrorOpen}
         />
 
         <Scrollbar>
@@ -168,6 +176,10 @@ export default function MembersPage() {
                       selected={selected.indexOf(row.id) !== -1}
                       handleClick={(event) => handleClick(event, row.id)}
                       updateUsers={updateUsers}
+                      setDeleteSuccessOpen={setDeleteSuccessOpen}
+                      setDeleteErrorOpen={setDeleteErrorOpen}
+                      setEditSuccessOpen={setEditSuccessOpen}
+                      setEditErrorOpen={setEditErrorOpen}
                     />
                   ))}
 
@@ -193,6 +205,16 @@ export default function MembersPage() {
           labelRowsPerPage="1ページあたりの表示数"
         />
       </Card>
+      <Snackbars
+        deleteSuccessOpen={deleteSuccessOpen}
+        deleteErrorOpen={deleteErrorOpen}
+        editSuccessOpen={editSuccessOpen}
+        editErrorOpen={editErrorOpen}
+        setDeleteSuccessOpen={setDeleteSuccessOpen}
+        setDeleteErrorOpen={setDeleteErrorOpen}
+        setEditSuccessOpen={setEditSuccessOpen}
+        setEditErrorOpen={setEditErrorOpen}
+      />
     </Container>
   );
 }

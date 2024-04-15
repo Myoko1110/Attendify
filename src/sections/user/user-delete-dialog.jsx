@@ -11,7 +11,16 @@ import {
   DialogContentText,
 } from '@mui/material';
 
-export default function UserDeleteDialog({ open, setOpen, id, lastName, firstName, updateUsers }) {
+export default function UserDeleteDialog({
+  open,
+  setOpen,
+  id,
+  lastName,
+  firstName,
+  updateUsers,
+  setDeleteSuccessOpen,
+  setDeleteErrorOpen,
+}) {
   const [cookies] = useCookies(['']);
 
   const handleClose = () => {
@@ -28,12 +37,14 @@ export default function UserDeleteDialog({ open, setOpen, id, lastName, firstNam
           token: session,
         },
       })
-      .then(() => {
+      .then((response) => {
         setOpen(false);
         updateUsers();
+        setDeleteSuccessOpen(true);
       })
-      .catch(() => {
+      .catch((error) => {
         setOpen(false);
+        setDeleteErrorOpen(true);
       });
   };
 
@@ -78,4 +89,6 @@ UserDeleteDialog.propTypes = {
   lastName: PropTypes.string,
   firstName: PropTypes.string,
   updateUsers: PropTypes.func,
+  setDeleteSuccessOpen: PropTypes.func,
+  setDeleteErrorOpen: PropTypes.func,
 };

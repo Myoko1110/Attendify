@@ -20,6 +20,8 @@ export default function UserTableToolbar({
   filterName,
   onFilterName,
   updateUsers,
+  setDeleteSuccessOpen,
+  setDeleteErrorOpen,
 }) {
   const [open, setOpen] = useState(false);
 
@@ -73,6 +75,8 @@ export default function UserTableToolbar({
         ids={selected}
         updateUsers={updateUsers}
         setSelected={setSelected}
+        setDeleteSuccessOpen={setDeleteSuccessOpen}
+        setDeleteErrorOpen={setDeleteErrorOpen}
       />
     </Toolbar>
   );
@@ -84,4 +88,6 @@ UserTableToolbar.propTypes = {
   filterName: PropTypes.string,
   onFilterName: PropTypes.func,
   updateUsers: PropTypes.func,
+  setDeleteSuccessOpen: PropTypes.func,
+  setDeleteErrorOpen: PropTypes.func,
 };

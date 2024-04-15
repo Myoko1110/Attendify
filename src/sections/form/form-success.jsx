@@ -1,10 +1,18 @@
 import PropTypes from 'prop-types';
 
-import { Stack, Typography } from '@mui/material';
+import { Stack, Button, Typography } from '@mui/material';
+
+import { useRouter } from 'src/routes/hooks';
 
 import Iconify from 'src/components/iconify';
 
 export default function FormSuccess({ isSuccess }) {
+  const router = useRouter();
+
+  const handleClick = () => {
+    router.replace('/form');
+  };
+
   return (
     <Stack direction="column" alignItems="center" justifyContent="center" height="256px">
       {isSuccess ? (
@@ -14,6 +22,7 @@ export default function FormSuccess({ isSuccess }) {
             回答を記録しました！
           </Typography>
           <Typography vairant="body2">このページは閉じても構いません。</Typography>
+          <Button onClick={handleClick}>戻る</Button>
         </>
       ) : (
         <>

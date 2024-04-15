@@ -28,6 +28,10 @@ export default function UserTableRow({
   rate,
   handleClick,
   updateUsers,
+  setDeleteSuccessOpen,
+  setDeleteErrorOpen,
+  setEditSuccessOpen,
+  setEditErrorOpen,
 }) {
   const [open, setOpen] = useState(false);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
@@ -138,6 +142,8 @@ export default function UserTableRow({
         lastName={lastName}
         firstName={firstName}
         updateUsers={updateUsers}
+        setDeleteSuccessOpen={setDeleteSuccessOpen}
+        setDeleteErrorOpen={setDeleteErrorOpen}
       />
       <UserEditDialog
         open={editDialogOpen}
@@ -148,6 +154,8 @@ export default function UserTableRow({
         part={part}
         grade={grade}
         updateUsers={updateUsers}
+        setEditSuccessOpen={setEditSuccessOpen}
+        setEditErrorOpen={setEditErrorOpen}
       />
     </>
   );
@@ -163,4 +171,8 @@ UserTableRow.propTypes = {
   rate: PropTypes.number,
   selected: PropTypes.any,
   updateUsers: PropTypes.func,
+  setDeleteSuccessOpen: PropTypes.func,
+  setDeleteErrorOpen: PropTypes.func,
+  setEditSuccessOpen: PropTypes.func,
+  setEditErrorOpen: PropTypes.func,
 };

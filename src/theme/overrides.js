@@ -98,12 +98,12 @@ export function overrides(theme) {
         root: {
           [`& .${outlinedInputClasses.notchedOutline}`]: {
             borderColor: alpha(theme.palette.grey[500], 0.24),
-            transition: "border-color .15s cubic-bezier(0.4, 0, 0.2, 1)",
+            transition: 'border-color .15s cubic-bezier(0.4, 0, 0.2, 1)',
           },
         },
         focused: {
-          transition: "border-color .15s cubic-bezier(0.4, 0, 0.2, 1)",
-        }
+          transition: 'border-color .15s cubic-bezier(0.4, 0, 0.2, 1)',
+        },
       },
     },
 
@@ -149,12 +149,16 @@ export function overrides(theme) {
     },
     MuiTablePagination: {
       defaultProps: {
-        labelDisplayedRows: ({
-                               from,
-                               to,
-                               count,
-                             }) => `${from}-${to} / ${count !== -1 ? count : `${to}以上`}`,
-      }
+        labelDisplayedRows: ({ from, to, count }) =>
+          `${from}-${to} / ${count !== -1 ? count : `${to}以上`}`,
+      },
+    },
+    MuiSnackbar: {
+      styleOverrides: {
+        root: {
+          boxShadow: theme.customShadows.card,
+        },
+      },
     },
   };
 }
