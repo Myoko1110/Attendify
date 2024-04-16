@@ -205,7 +205,12 @@ export default function UserAddDialog({ isDialogOpen, setIsDialogOpen, updateUse
         autoHideDuration={5000}
         onClose={handleSuccessSnackbarClose}
       >
-        <Alert severity="success" onClose={handleSuccessSnackbarClose}>
+        <Alert
+          severity="success"
+          variant="outlined"
+          sx={{ bgcolor: 'background.paper' }}
+          onClose={handleSuccessSnackbarClose}
+        >
           部員を追加しました。
         </Alert>
       </Snackbar>
@@ -215,7 +220,12 @@ export default function UserAddDialog({ isDialogOpen, setIsDialogOpen, updateUse
         autoHideDuration={5000}
         onClose={handleErrorSnackbarClose}
       >
-        <Alert severity="error" onClose={handleErrorSnackbarClose}>
+        <Alert
+          severity="error"
+          variant="outlined"
+          sx={{ bgcolor: 'background.paper' }}
+          onClose={handleErrorSnackbarClose}
+        >
           追加に失敗しました。
         </Alert>
       </Snackbar>

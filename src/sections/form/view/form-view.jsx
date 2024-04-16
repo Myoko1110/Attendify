@@ -5,7 +5,6 @@ import { useRef, useState, useEffect } from 'react';
 
 import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
-import Link from '@mui/material/Link';
 import Stack from '@mui/material/Stack';
 import Button from '@mui/material/Button';
 import Container from '@mui/material/Container';
@@ -46,6 +45,8 @@ export default function FormView() {
   const [attendances, setAttendances] = useState({});
   const [isSuccess, setIsSuccess] = useState(null);
 
+  const theme = useTheme();
+
   const lgUp = useResponsive('up', 'lg');
 
   useEffect(() => {
@@ -60,20 +61,11 @@ export default function FormView() {
 
       if (type === 'executive') {
         backToDashboardRef.current = (
-          <Link
-            href="/"
+          <Button
+            onClick={handleBack}
+            color="inherit"
             sx={{
-              color: 'initial',
-              textDecoration: 'none',
-              display: 'block',
-              width: 'fit-content',
-              px: 1.5,
-              py: 0.5,
               mb: 1,
-              borderRadius: 1,
-              '&:hover': {
-                backgroundColor: 'rgba(100, 100, 100, .1)',
-              },
             }}
             alignItems="center"
           >
@@ -83,7 +75,7 @@ export default function FormView() {
                 ダッシュボードへ戻る
               </Typography>
             </Stack>
-          </Link>
+          </Button>
         );
       }
     } else {
@@ -138,7 +130,17 @@ export default function FormView() {
     }
   };
 
-  const theme = useTheme();
+  const resetStates = () => {
+    setActiveStep(0);
+    setDate('');
+    setPart('');
+    setGrade(null);
+    setIsSuccess(null);
+  };
+
+  const handleBack = () => {
+    router.replace('/');
+  };
 
   return (
     <>
@@ -256,7 +258,7 @@ export default function FormView() {
                     )}
                   </>
                 ) : (
-                  <FormSuccess isSuccess={isSuccess} />
+                  <FormSuccess isSuccess={isSuccess} resetStates={resetStates} />
                 )}
               </Card>
             </Container>

@@ -1,0 +1,51 @@
+.fc-header-toolbar {
+  padding: 6px 12px;
+}
+
+.fc-toolbar-chunk:nth-child(2) div {
+  display: flex;
+  gap: 12px;
+}
+
+.fc-theme-standard td,
+.fc-theme-standard th {
+  border-bottom: none;
+  border-right: none;
+  border-color: rgba(145, 158, 171, 0.16);
+}
+
+.fc-theme-standard .fc-scrollgrid {
+  border: none;
+  border-color: rgba(145, 158, 171, 0.16);
+}
+
+.fc-col-header-cell {
+  border-top: 1px solid rgba(145, 158, 171, 0.16) !important;
+  border-bottom: 1px solid rgba(145, 158, 171, 0.16) !important;
+  border-left: none;
+}
+
+.fc-prev-button,
+.fc-next-button {
+  background-color: transparent !important;
+  border: none !important;
+  border-radius: 100px !important;
+}
+
+.fc-prev-button:hover,
+.fc-next-button:hover {
+  background-color: #aaaaaa25 !important;
+}
+
+.fc-prev-button:focus,
+.fc-next-button:focus {
+  box-shadow: none !important;
+}
+
+.fc-icon::before {
+  color: #212b36;
+}
+
+:root {
+  --fc-today-bg-color: rgba(145, 158, 171, 0.08);
+}

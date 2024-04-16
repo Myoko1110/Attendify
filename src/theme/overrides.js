@@ -153,12 +153,5 @@ export function overrides(theme) {
           `${from}-${to} / ${count !== -1 ? count : `${to}以上`}`,
       },
     },
-    MuiSnackbar: {
-      styleOverrides: {
-        root: {
-          boxShadow: theme.customShadows.card,
-        },
-      },
-    },
   };
 }

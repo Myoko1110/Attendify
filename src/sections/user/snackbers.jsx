@@ -32,20 +32,30 @@ export default function Snackbars({
       <Snackbar
         anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
         open={deleteSuccessOpen}
-        autoHideDuration={3000}
+        autoHideDuration={5000}
         onClose={handleDeleteSuccessClose}
       >
-        <Alert severity="success" onClose={handleDeleteSuccessClose}>
+        <Alert
+          severity="success"
+          variant="outlined"
+          sx={{ bgcolor: 'background.paper' }}
+          onClose={handleDeleteSuccessClose}
+        >
           部員を削除しました。
         </Alert>
       </Snackbar>
       <Snackbar
         anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
         open={deleteErrorOpen}
-        autoHideDuration={3000}
+        autoHideDuration={5000}
         onClose={handleDeleteErrorClose}
       >
-        <Alert severity="error" onClose={handleDeleteErrorClose}>
+        <Alert
+          severity="error"
+          variant="outlined"
+          sx={{ bgcolor: 'background.paper' }}
+          onClose={handleDeleteErrorClose}
+        >
           削除に失敗しました。
         </Alert>
       </Snackbar>
@@ -54,10 +64,15 @@ export default function Snackbars({
       <Snackbar
         anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
         open={editSuccessOpen}
-        autoHideDuration={3000}
+        autoHideDuration={5000}
         onClose={handleEditSuccessClose}
       >
-        <Alert severity="success" onClose={handleEditSuccessClose}>
+        <Alert
+          severity="success"
+          variant="outlined"
+          sx={{ bgcolor: 'background.paper' }}
+          onClose={handleEditSuccessClose}
+        >
           編集を保存しました。
         </Alert>
       </Snackbar>
@@ -67,7 +82,12 @@ export default function Snackbars({
         autoHideDuration={3000}
         onClose={handleEditErrorClose}
       >
-        <Alert severity="error" onClose={handleEditErrorClose}>
+        <Alert
+          severity="error"
+          variant="outlined"
+          sx={{ bgcolor: 'background.paper' }}
+          onClose={handleEditErrorClose}
+        >
           保存に失敗しました。
         </Alert>
       </Snackbar>
