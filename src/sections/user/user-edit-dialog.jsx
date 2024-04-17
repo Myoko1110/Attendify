@@ -55,6 +55,7 @@ export default function UserEditDialog({
 
   const handleChancelClick = () => {
     setOpen(false);
+    setIsError(false);
   };
 
   const handleClick = (e) => {
@@ -62,6 +63,8 @@ export default function UserEditDialog({
     if (!(inputLastName && inputFirstName && inputPart && inputGrade)) {
       setIsError(true);
     } else {
+      setIsError(false);
+
       const { session, userId } = cookies;
       axios
         .put('http://localhost:8000/api/v1/member/', {

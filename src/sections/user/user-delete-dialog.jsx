@@ -59,8 +59,6 @@ export default function UserDeleteDialog({
           borderRadius: '16px',
         },
       }}
-      aria-labelledby="alert-dialog-title"
-      aria-describedby="alert-dialog-description"
     >
       <DialogTitle id="alert-dialog-title" sx={{ padding: '24px' }}>
         以下の部員を本当に削除しますか？

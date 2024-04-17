@@ -60,6 +60,7 @@ export default function UserAddDialog({ isDialogOpen, setIsDialogOpen, updateUse
     if (!(lastName && firstName && part && grade)) {
       setIsError(true);
     } else {
+      setIsError(false);
       const { session, userId } = cookies;
       axios
         .post('http://localhost:8000/api/v1/member/', {
@@ -85,6 +86,7 @@ export default function UserAddDialog({ isDialogOpen, setIsDialogOpen, updateUse
 
   const handleChancelClick = () => {
     setIsDialogOpen(false);
+    setIsError(false);
   };
 
   const handleSuccessSnackbarClose = () => {
@@ -98,6 +100,7 @@ export default function UserAddDialog({ isDialogOpen, setIsDialogOpen, updateUse
     <>
       <Dialog
         open={isDialogOpen}
+        onClose={handleChancelClick}
         sx={{
           '& .MuiPaper-root': {
             width: '100%',

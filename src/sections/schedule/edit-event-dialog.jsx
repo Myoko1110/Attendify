@@ -1,104 +1,71 @@
 import axios from 'axios';
-import { useState } from 'react';
 import PropTypes from 'prop-types';
 import { useCookies } from 'react-cookie';
+import { useState, useEffect } from 'react';
 
-import { grey } from '@mui/material/colors';
 import {
   Stack,
   Alert,
   Dialog,
   Button,
   Snackbar,
-  TextField,
   DialogTitle,
   FormControl,
   ToggleButton,
   DialogContent,
-  DialogActions,
   ToggleButtonGroup,
 } from '@mui/material';
 
 import { info, error, success, warning } from 'src/theme/palette';
 
-export default function EventAddDialog({ isOpen, setIsOpen, date, setEvents }) {
-  const [schedule, setSchedule] = useState('');
-  const [otherSchedule, setOtherSchedule] = useState('');
+import Iconify from 'src/components/iconify';
 
+export default function EventEditDialog({
+  isOpen,
+  setIsOpen,
+  date,
+  scheduleType,
+  updateSchedules,
+}) {
   const [addSuccessSnackbarOpen, setAddSuccessSnackbarOpen] = useState(false);
   const [addErrorSnackbarOpen, setAddErrorSnackbarOpen] = useState(false);
+  const [deleteSuccessSnackbarOpen, setDeleteSuccessSnackbarOpen] = useState(false);
+  const [deleteErrorSnackbarOpen, setDeleteErrorSnackbarOpen] = useState(false);
 
   const [isError, setIsError] = useState(false);
+  const [schedule, setSchedule] = useState('');
 
   const [cookies] = useCookies(['']);
 
+  useEffect(() => {
+    setSchedule(scheduleType);
+  }, [date, scheduleType]);
+
   const resetInputs = () => {
     setIsError(false);
-    setSchedule('');
   };
 
-  const handleClick = (e) => {
+  const handleSaveClick = (e) => {
     e.preventDefault();
     if (!schedule) {
       setIsError(true);
     } else {
+      setIsError(false);
+
       const { session, userId } = cookies;
-
-      let scheduleType;
-      if (schedule === 'OTHER') {
-        scheduleType = otherSchedule;
-      } else {
-        scheduleType = schedule;
-      }
-
       axios
-        .post('http://localhost:8000/api/v1/schedule/', {
+        .put('http://localhost:8000/api/v1/schedule/', {
           userId: userId.replace('_', ''),
           token: session,
           date: Number(date.getTime() / 1000),
-          scheduleType,
+          scheduleType: schedule,
         })
         .then(() => {
           setIsOpen(false);
           resetInputs();
           setAddSuccessSnackbarOpen(true);
 
-          const item = {
-            start: date,
-            allDay: true,
-            extendedProps: {
-              scheduleType,
-            },
-          };
-          switch (schedule) {
-            case 'WEEKDAY':
-              item.title = '平日練習';
-              item.color = info.lighter;
-              item.textColor = info.dark;
-              break;
-            case 'MORNING':
-              item.title = '午前練習';
-              item.color = success.lighter;
-              item.textColor = success.dark;
-              break;
-            case 'AFTERNOON':
-              item.title = '午後練習';
-              item.color = warning.lighter;
-              item.textColor = warning.dark;
-              break;
-            case 'ALLDAY':
-              item.title = '一日練習';
-              item.color = error.lighter;
-              item.textColor = error.dark;
-              break;
-            default:
-              item.title = schedule;
-              item.color = grey[400];
-              item.textColor = grey[800];
-              break;
-          }
-
-          setEvents((pre) => [...pre, item]);
+          updateSchedules();
         })
         .catch(() => {
           setIsOpen();
@@ -107,13 +74,40 @@ export default function EventAddDialog({ isOpen, setIsOpen, date, setEvents }) {
     }
   };
 
+  const handleDeleteClick = (e) => {
+    e.preventDefault();
+    setIsError(false);
+
+    const { session, userId } = cookies;
+    axios
+      .delete('http://localhost:8000/api/v1/schedule/', {
+        data: {
+          userId: userId.replace('_', ''),
+          token: session,
+          date: Number(date.getTime() / 1000),
+        },
+      })
+      .then(() => {
+        setIsOpen(false);
+        resetInputs();
+        setDeleteSuccessSnackbarOpen(true);
+
+        updateSchedules();
+      })
+      .catch(() => {
+        setIsOpen();
+        setDeleteErrorSnackbarOpen(true);
+      });
+  };
+
   const handleScheduleChange = (e) => {
     setSchedule(e.target.value);
   };
 
   const handleChancelClick = () => {
     setIsOpen(false);
-    resetInputs();
+    setSchedule('');
+    setIsError(false);
   };
 
   const handleSuccessSnackbarClose = () => {
@@ -137,9 +131,9 @@ export default function EventAddDialog({ isOpen, setIsOpen, date, setEvents }) {
         }}
       >
         <DialogTitle sx={{ padding: '24px' }}>
-          {date.getMonth() + 1}月{date.getDate()}日の予定を追加
+          {date.getMonth() + 1}月{date.getDate()}日の予定を編集
         </DialogTitle>
-        <form onSubmit={handleClick}>
+        <form onSubmit={handleSaveClick}>
           <DialogContent sx={{ paddingTop: '10px!important' }}>
             <Stack direction="column" gap="24px">
               {isError && <Alert severity="error">未入力の項目があります。</Alert>}
@@ -148,6 +142,7 @@ export default function EventAddDialog({ isOpen, setIsOpen, date, setEvents }) {
                   variant="outlined"
                   value={schedule}
                   onChange={handleScheduleChange}
+                  exclusive
                   fullWidth
                 >
                   <ToggleButton
@@ -206,40 +201,28 @@ export default function EventAddDialog({ isOpen, setIsOpen, date, setEvents }) {
                   >
                     一日練習
                   </ToggleButton>
-                  <ToggleButton
-                    value="OTHER"
-                    sx={{
-                      bgcolor: grey[200],
-                      '&:hover': { bgcolor: grey[300] },
-                      '&.Mui-selected': {
-                        bgcolor: grey[500],
-                        color: 'white',
-                        '&:hover': { bgcolor: grey[700] },
-                      },
-                    }}
-                  >
-                    その他
-                  </ToggleButton>
                 </ToggleButtonGroup>
-              </FormControl>
-              <FormControl>
-                <TextField
-                  value={otherSchedule}
-                  onChange={(e) => setOtherSchedule(e.target.value)}
-                  variant="standard"
-                  placeholder="その他を入力してください"
-                />
               </FormControl>
             </Stack>
           </DialogContent>
-          <DialogActions sx={{ p: '24px' }}>
-            <Button variant="outlined" color="inherit" onClick={handleChancelClick}>
-              キャンセル
+          <Stack direction="row" gap="8px" justifyContent="space-between" sx={{ p: '24px' }}>
+            <Button
+              variant="contained"
+              color="error"
+              onClick={handleDeleteClick}
+              startIcon={<Iconify icon="eva:trash-2-outline" />}
+            >
+              削除
             </Button>
-            <Button variant="contained" color="inherit" type="submit">
-              保存
-            </Button>
-          </DialogActions>
+            <Stack gap="8px" direction="row">
+              <Button variant="outlined" color="inherit" onClick={handleChancelClick}>
+                キャンセル
+              </Button>
+              <Button variant="contained" color="inherit" type="submit">
+                保存
+              </Button>
+            </Stack>
+          </Stack>
         </form>
       </Dialog>
       <Snackbar
@@ -254,7 +237,7 @@ export default function EventAddDialog({ isOpen, setIsOpen, date, setEvents }) {
           sx={{ bgcolor: 'background.paper' }}
           onClose={handleSuccessSnackbarClose}
         >
-          部員を追加しました。
+          予定を追加しました。
         </Alert>
       </Snackbar>
       <Snackbar
@@ -269,15 +252,46 @@ export default function EventAddDialog({ isOpen, setIsOpen, date, setEvents }) {
           sx={{ bgcolor: 'background.paper' }}
           onClose={handleErrorSnackbarClose}
         >
-          追加に失敗しました。
+          予定の登録に失敗しました。
+        </Alert>
+      </Snackbar>
+      <Snackbar
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+        open={deleteSuccessSnackbarOpen}
+        autoHideDuration={5000}
+        onClose={() => setDeleteSuccessSnackbarOpen(false)}
+      >
+        <Alert
+          severity="success"
+          variant="outlined"
+          sx={{ bgcolor: 'background.paper' }}
+          onClose={() => setDeleteSuccessSnackbarOpen(false)}
+        >
+          予定を削除しました。
+        </Alert>
+      </Snackbar>
+      <Snackbar
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+        open={deleteErrorSnackbarOpen}
+        autoHideDuration={5000}
+        onClose={() => setDeleteErrorSnackbarOpen(false)}
+      >
+        <Alert
+          severity="error"
+          variant="outlined"
+          sx={{ bgcolor: 'background.paper' }}
+          onClose={() => setDeleteErrorSnackbarOpen(false)}
+        >
+          予定の登録に失敗しました。
         </Alert>
       </Snackbar>
     </>
   );
 }
-EventAddDialog.propTypes = {
+EventEditDialog.propTypes = {
   isOpen: PropTypes.bool,
   setIsOpen: PropTypes.func,
   date: PropTypes.any,
-  setEvents: PropTypes.func,
+  scheduleType: PropTypes.string,
+  updateSchedules: PropTypes.func,
 };
