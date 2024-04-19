@@ -7,9 +7,9 @@ import RadioGroup from '@mui/material/RadioGroup';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import { Select, FormLabel, FormControl } from '@mui/material';
 
-import { parts } from '../../_mock/part';
+import Parts from '../../utils/part';
 
-export default function DatePartSelect({ date, part, grade, setDate, setPart, setGrade }) {
+export default function DatePartSelects({ date, part, grade, dates, setDate, setPart, setGrade }) {
   const handleDateChange = (e) => {
     setDate(e.target.value);
   };
@@ -35,7 +35,11 @@ export default function DatePartSelect({ date, part, grade, setDate, setPart, se
           <MenuItem value="" disabled selected>
             選択
           </MenuItem>
-          <MenuItem value="2024-04-08">4月8日</MenuItem>
+          {dates.map((row, i) => (
+            <MenuItem key={i} value={row}>
+              {row.getMonth() + 1}月{row.getDate()}日
+            </MenuItem>
+          ))}
         </Select>
       </FormControl>
       <FormControl fullWidth sx={{ my: 1 }}>
@@ -54,9 +58,9 @@ export default function DatePartSelect({ date, part, grade, setDate, setPart, se
           <MenuItem value="" disabled selected>
             選択
           </MenuItem>
-          {parts.map((row) => (
-            <MenuItem value={row.name} key={row.name}>
-              {row.name}
+          {Parts.map((row) => (
+            <MenuItem value={row.en} key={row.en}>
+              {row.en}
             </MenuItem>
           ))}
         </Select>
@@ -72,10 +76,11 @@ export default function DatePartSelect({ date, part, grade, setDate, setPart, se
   );
 }
 
-DatePartSelect.propTypes = {
+DatePartSelects.propTypes = {
   date: PropTypes.any,
   part: PropTypes.any,
   grade: PropTypes.any,
+  dates: PropTypes.array,
   setDate: PropTypes.func,
   setPart: PropTypes.func,
   setGrade: PropTypes.func,

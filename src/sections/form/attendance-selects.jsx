@@ -9,7 +9,7 @@ import { Stack, Alert, Button, Typography } from '@mui/material';
 
 import Iconify from 'src/components/iconify';
 
-import { getMembers } from '../../_mock/user';
+import Member from '../../utils/member';
 import AttendanceMemberSelect from './attendance-attendance-select';
 
 export default function AttendanceSelect({
@@ -23,7 +23,7 @@ export default function AttendanceSelect({
 }) {
   const [cookies] = useCookies(['status', '']);
 
-  const [members] = useState(getMembers(cookies.userId, cookies.session, part, grade));
+  const [members, setMembers] = useState([]);
   const [isExists, setIsExists] = useState(null);
 
   useEffect(() => {
@@ -45,6 +45,12 @@ export default function AttendanceSelect({
       .catch(() => {
         setIsExists(false);
       });
+
+    Member.byPartAndGrade(part, grade, cookies)
+      .then((m) => {
+        setMembers(m);
+      });
+    
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -116,7 +122,7 @@ export default function AttendanceSelect({
 }
 
 AttendanceSelect.propTypes = {
-  date: PropTypes.string,
+  date: PropTypes.oneOf([PropTypes.instanceOf(Date), PropTypes.string]),
   part: PropTypes.string,
   grade: PropTypes.string,
   setAttendances: PropTypes.func,

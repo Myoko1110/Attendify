@@ -11,6 +11,8 @@ import Typography from '@mui/material/Typography';
 import IconButton from '@mui/material/IconButton';
 import LinearProgress from '@mui/material/LinearProgress';
 
+import Member from 'src/utils/member';
+
 import Iconify from 'src/components/iconify';
 
 import UserEditDialog from './user-edit-dialog';
@@ -19,20 +21,15 @@ import UserDeleteDialog from './user-delete-dialog';
 // ----------------------------------------------------------------------
 
 export default function UserTableRow({
-  selected,
-  id,
-  lastName,
-  firstName,
-  part,
-  grade,
-  rate,
-  handleClick,
-  updateUsers,
-  setDeleteSuccessOpen,
-  setDeleteErrorOpen,
-  setEditSuccessOpen,
-  setEditErrorOpen,
-}) {
+                                       member,
+                                       selected,
+                                       handleClick,
+                                       updateUsers,
+                                       setDeleteSuccessOpen,
+                                       setDeleteErrorOpen,
+                                       setEditSuccessOpen,
+                                       setEditErrorOpen,
+                                     }) {
   const [open, setOpen] = useState(false);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [editDialogOpen, setEditDialogOpen] = useState(false);
@@ -63,21 +60,21 @@ export default function UserTableRow({
 
         <TableCell>
           <Typography variant="subtitle1" noWrap>
-            {lastName} {firstName}
+            {member.lastName}&nbsp;{member.firstName}
           </Typography>
         </TableCell>
 
-        <TableCell>{part}</TableCell>
+        <TableCell>{member.part}</TableCell>
 
-        <TableCell>{grade}</TableCell>
+        <TableCell>{member.grade.jpOmitted}</TableCell>
 
         <TableCell align="center">
           <Grid container alignItems="center" justify="spaceBetween">
             <Grid item xs={6}>
-              {rate >= 80 ? (
+              {member.rate >= 80 ? (
                 <LinearProgress
                   variant="determinate"
-                  value={rate}
+                  value={member.rate}
                   sx={{
                     height: '10px',
                     backgroundColor: 'success.lighter',
@@ -90,7 +87,7 @@ export default function UserTableRow({
               ) : (
                 <LinearProgress
                   variant="determinate"
-                  value={rate}
+                  value={member.rate}
                   sx={{
                     height: '10px',
                     backgroundColor: 'warning.lighter',
@@ -103,7 +100,7 @@ export default function UserTableRow({
               )}
             </Grid>
             <Grid item xs={6}>
-              <Typography variant="body2">{rate.toFixed(2)}%</Typography>
+              <Typography variant="body2">{member.rate.toFixed(2)}%</Typography>
             </Grid>
           </Grid>
         </TableCell>
@@ -121,8 +118,10 @@ export default function UserTableRow({
         onClose={handleCloseMenu}
         anchorOrigin={{ vertical: 'top', horizontal: 'left' }}
         transformOrigin={{ vertical: 'top', horizontal: 'right' }}
-        PaperProps={{
-          sx: { width: 140 },
+        slotProps={{
+          paper: {
+            sx: { width: 140 },
+          },
         }}
       >
         <MenuItem onClick={handleEditDialogOpen}>
@@ -138,9 +137,7 @@ export default function UserTableRow({
       <UserDeleteDialog
         open={deleteDialogOpen}
         setOpen={setDeleteDialogOpen}
-        id={id}
-        lastName={lastName}
-        firstName={firstName}
+        member={member}
         updateUsers={updateUsers}
         setDeleteSuccessOpen={setDeleteSuccessOpen}
         setDeleteErrorOpen={setDeleteErrorOpen}
@@ -148,11 +145,7 @@ export default function UserTableRow({
       <UserEditDialog
         open={editDialogOpen}
         setOpen={setEditDialogOpen}
-        id={id}
-        lastName={lastName}
-        firstName={firstName}
-        part={part}
-        grade={grade}
+        member={member}
         updateUsers={updateUsers}
         setEditSuccessOpen={setEditSuccessOpen}
         setEditErrorOpen={setEditErrorOpen}
@@ -162,14 +155,10 @@ export default function UserTableRow({
 }
 
 UserTableRow.propTypes = {
-  handleClick: PropTypes.func,
-  id: PropTypes.number,
-  part: PropTypes.any,
-  lastName: PropTypes.any,
-  firstName: PropTypes.any,
-  grade: PropTypes.any,
-  rate: PropTypes.number,
+  
+  member: PropTypes.instanceOf(Member).isRequired,
   selected: PropTypes.any,
+  handleClick: PropTypes.func,
   updateUsers: PropTypes.func,
   setDeleteSuccessOpen: PropTypes.func,
   setDeleteErrorOpen: PropTypes.func,

@@ -1,17 +1,17 @@
 import { Helmet } from 'react-helmet-async';
 
-import { ProductsView } from 'src/sections/products/view';
+import { ServerErrorView } from 'src/sections/server-error';
 
 // ----------------------------------------------------------------------
 
-export default function ProductsPage() {
+export default function ServerErrorPage() {
   return (
     <>
       <Helmet>
-        <title> Products | Attendify </title>
+        <title> 500 Internal Server Error </title>
       </Helmet>
 
-      <ProductsView />
+      <ServerErrorView />
     </>
   );
 }

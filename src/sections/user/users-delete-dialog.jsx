@@ -4,19 +4,17 @@ import PropTypes from 'prop-types';
 import { useCookies } from 'react-cookie';
 
 import Button from '@mui/material/Button';
-import { Alert, Dialog, Snackbar, IconButton, DialogTitle, DialogActions } from '@mui/material';
-
-import Iconify from 'src/components/iconify';
+import { Alert, Dialog, Snackbar, DialogTitle, DialogActions } from '@mui/material';
 
 export default function UsersDeleteDialog({
-  open,
-  setOpen,
-  ids,
-  updateUsers,
-  setSelected,
-  setDeleteSuccessOpen,
-  setDeleteErrorOpen,
-}) {
+                                            open,
+                                            setOpen,
+                                            ids,
+                                            updateUsers,
+                                            setSelected,
+                                            setDeleteSuccessOpen,
+                                            setDeleteErrorOpen,
+                                          }) {
   const [cookies] = useCookies(['']);
 
   const [successSnackbarOpen, setSuccessSnackbarOpen] = useState(false);
@@ -88,15 +86,8 @@ export default function UsersDeleteDialog({
         autoHideDuration={5000}
         onClose={handleSuccessSnackbarClose}
       >
-        <Alert severity="success">
+        <Alert severity="success" onClose={handleSuccessSnackbarClose}>
           部員を削除しました。
-          <IconButton
-            onClick={handleSuccessSnackbarClose}
-            color="inherit"
-            sx={{ width: 32, height: 32, p: '4px' }}
-          >
-            <Iconify onClick={handleSuccessSnackbarClose} icon="eva:close-outline" />
-          </IconButton>
         </Alert>
       </Snackbar>
       <Snackbar
@@ -105,14 +96,7 @@ export default function UsersDeleteDialog({
         autoHideDuration={5000}
         onClose={handleErrorSnackbarClose}
       >
-        <Alert severity="error">削除に失敗しました。</Alert>
-        <IconButton
-          onClick={handleErrorSnackbarClose}
-          color="inherit"
-          sx={{ width: 32, height: 32, p: '4px' }}
-        >
-          <Iconify onClick={handleErrorSnackbarClose} icon="eva:close-outline" />
-        </IconButton>
+        <Alert severity="error" onClose={handleErrorSnackbarClose}>削除に失敗しました。</Alert>
       </Snackbar>
     </>
   );

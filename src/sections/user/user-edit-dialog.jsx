@@ -18,24 +18,22 @@ import {
   DialogContent,
 } from '@mui/material';
 
-import { parts } from '../../_mock/part';
+import Parts from 'src/utils/part';
+import Grades from 'src/utils/grade';
+import Member from 'src/utils/member';
 
 export default function UserEditDialog({
   open,
   setOpen,
-  id,
-  lastName,
-  firstName,
-  part,
-  grade,
+  member,
   updateUsers,
   setEditSuccessOpen,
   setEditErrorOpen,
 }) {
-  const [inputLastName, setLastName] = useState(lastName);
-  const [inputFirstName, setFirstName] = useState(firstName);
-  const [inputPart, setPart] = useState(part);
-  const [inputGrade, setGrade] = useState(grade);
+  const [lastName, setLastName] = useState(member.lastName);
+  const [firstName, setFirstName] = useState(member.firstName);
+  const [part, setPart] = useState(member.part);
+  const [grade, setGrade] = useState(member.grade);
   const [isError, setIsError] = useState(false);
 
   const [cookies] = useCookies(['']);
@@ -60,7 +58,7 @@ export default function UserEditDialog({
 
   const handleClick = (e) => {
     e.preventDefault();
-    if (!(inputLastName && inputFirstName && inputPart && inputGrade)) {
+    if (!(lastName && firstName && part && grade)) {
       setIsError(true);
     } else {
       setIsError(false);
@@ -68,11 +66,11 @@ export default function UserEditDialog({
       const { session, userId } = cookies;
       axios
         .put('http://localhost:8000/api/v1/member/', {
-          lastName: inputLastName,
-          firstName: inputFirstName,
-          id,
-          part: inputPart,
-          grade: inputGrade,
+          lastName,
+          firstName,
+          id: member.id,
+          part,
+          grade,
           userId: userId.replace('_', ''),
           token: session,
         })
@@ -89,12 +87,12 @@ export default function UserEditDialog({
   };
 
   useEffect(() => {
-    setLastName(lastName);
-    setFirstName(firstName);
-    setPart(part);
-    setGrade(grade);
+    setLastName(member.lastName);
+    setFirstName(member.firstName);
+    setPart(member.part);
+    setGrade(member.grade.en);
     setIsError(false);
-  }, [lastName, firstName, part, grade]);
+  }, [member]);
 
   return (
     <Dialog
@@ -124,7 +122,7 @@ export default function UserEditDialog({
                   label="姓"
                   type="text"
                   variant="outlined"
-                  value={inputLastName}
+                  value={lastName}
                   onChange={handleLastNameChange}
                   color="grey"
                   fullWidth
@@ -135,7 +133,7 @@ export default function UserEditDialog({
                   label="名"
                   type="text"
                   variant="outlined"
-                  value={inputFirstName}
+                  value={firstName}
                   onChange={handleFirstNameChange}
                   color="grey"
                   fullWidth
@@ -152,7 +150,7 @@ export default function UserEditDialog({
                 labelId="add-member-part-label"
                 label="パート"
                 defaultValue=""
-                value={inputPart}
+                value={part}
                 onChange={handlePartChange}
                 color="grey"
                 fullWidth
@@ -160,9 +158,9 @@ export default function UserEditDialog({
                 <MenuItem value="" disabled>
                   選択
                 </MenuItem>
-                {parts.map((row) => (
-                  <MenuItem value={row.name} key={row.name}>
-                    {row.name}
+                {Parts.map((row) => (
+                  <MenuItem value={row.en} key={row.en}>
+                    {row.en}
                   </MenuItem>
                 ))}
               </Select>
@@ -176,7 +174,7 @@ export default function UserEditDialog({
                 labelId="add-member-grade-label"
                 label="学年"
                 defaultValue=""
-                value={inputGrade}
+                value={grade}
                 onChange={handleGradeChange}
                 color="grey"
                 fullWidth
@@ -184,12 +182,9 @@ export default function UserEditDialog({
                 <MenuItem value="" disabled>
                   選択
                 </MenuItem>
-                <MenuItem value="Junior1">中1</MenuItem>
-                <MenuItem value="Junior2">中2</MenuItem>
-                <MenuItem value="Junior3">中3</MenuItem>
-                <MenuItem value="High1">高1</MenuItem>
-                <MenuItem value="High2">高2</MenuItem>
-                <MenuItem value="High3">高3</MenuItem>
+                {Object.keys(Grades).map(key => (
+                  <MenuItem key={Grades[key].en} value={Grades[key].en}>{Grades[key].jpOmitted}</MenuItem>
+                ))}
               </Select>
             </FormControl>
           </Stack>
@@ -209,13 +204,9 @@ export default function UserEditDialog({
 }
 
 UserEditDialog.propTypes = {
-  open: PropTypes.bool,
-  setOpen: PropTypes.func,
-  id: PropTypes.number,
-  lastName: PropTypes.string,
-  firstName: PropTypes.string,
-  part: PropTypes.string,
-  grade: PropTypes.string,
+  open: PropTypes.bool.isRequired,
+  setOpen: PropTypes.func.isRequired,
+  member: PropTypes.instanceOf(Member).isRequired,
   updateUsers: PropTypes.func,
   setEditSuccessOpen: PropTypes.func,
   setEditErrorOpen: PropTypes.func,

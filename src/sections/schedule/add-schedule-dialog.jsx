@@ -1,4 +1,3 @@
-import axios from 'axios';
 import { useState } from 'react';
 import PropTypes from 'prop-types';
 import { useCookies } from 'react-cookie';
@@ -21,8 +20,12 @@ import {
 
 import { info, error, success, warning } from 'src/theme/palette';
 
-export default function EventAddDialog({ isOpen, setIsOpen, date, setEvents }) {
+import Schedule from '../../utils/schedule';
+import ScheduleType from '../../utils/schedule-type';
+
+export default function AddScheduleDialog({ isOpen, setIsOpen, date, setEvents }) {
   const [schedule, setSchedule] = useState('');
+  const [isOther, setIsOther] = useState(false);
   const [otherSchedule, setOtherSchedule] = useState('');
 
   const [addSuccessSnackbarOpen, setAddSuccessSnackbarOpen] = useState(false);
@@ -42,66 +45,37 @@ export default function EventAddDialog({ isOpen, setIsOpen, date, setEvents }) {
     if (!schedule) {
       setIsError(true);
     } else {
-      const { session, userId } = cookies;
+
 
       let scheduleType;
-      if (schedule === 'OTHER') {
+      if (isOther) {
+        if ((!otherSchedule)) {
+          setIsError(true);
+          return;
+        }
         scheduleType = otherSchedule;
       } else {
         scheduleType = schedule;
       }
 
-      axios
-        .post('http://localhost:8000/api/v1/schedule/', {
-          userId: userId.replace('_', ''),
-          token: session,
-          date: Number(date.getTime() / 1000),
-          scheduleType,
-        })
+      const s = new Schedule(date, new ScheduleType(scheduleType));
+      s.add(cookies)
         .then(() => {
-          setIsOpen(false);
-          resetInputs();
-          setAddSuccessSnackbarOpen(true);
-
-          const item = {
+          setEvents((pre) => [...pre, {
             start: date,
+            title: s.type.jp,
+            color: s.type.color,
+            textColor: s.type.textColor,
             allDay: true,
             extendedProps: {
-              scheduleType,
+              type: s.type,
             },
-          };
-          switch (schedule) {
-            case 'WEEKDAY':
-              item.title = '平日練習';
-              item.color = info.lighter;
-              item.textColor = info.dark;
-              break;
-            case 'MORNING':
-              item.title = '午前練習';
-              item.color = success.lighter;
-              item.textColor = success.dark;
-              break;
-            case 'AFTERNOON':
-              item.title = '午後練習';
-              item.color = warning.lighter;
-              item.textColor = warning.dark;
-              break;
-            case 'ALLDAY':
-              item.title = '一日練習';
-              item.color = error.lighter;
-              item.textColor = error.dark;
-              break;
-            default:
-              item.title = schedule;
-              item.color = grey[400];
-              item.textColor = grey[800];
-              break;
-          }
-
-          setEvents((pre) => [...pre, item]);
+          }]);
+          setIsOpen(false);
+          setAddSuccessSnackbarOpen(true);
         })
         .catch(() => {
-          setIsOpen();
+          setIsOpen(false);
           setAddErrorSnackbarOpen(true);
         });
     }
@@ -109,6 +83,7 @@ export default function EventAddDialog({ isOpen, setIsOpen, date, setEvents }) {
 
   const handleScheduleChange = (e) => {
     setSchedule(e.target.value);
+    setIsOther(e.target.value === 'OTHER');
   };
 
   const handleChancelClick = () => {
@@ -153,8 +128,8 @@ export default function EventAddDialog({ isOpen, setIsOpen, date, setEvents }) {
                   <ToggleButton
                     value="WEEKDAY"
                     sx={{
-                      bgcolor: info.lighter,
-                      '&:hover': { bgcolor: info.light },
+                      bgcolor: info.lightest,
+                      '&:hover': { bgcolor: info.lighter },
                       '&.Mui-selected': {
                         bgcolor: info.main,
                         color: 'white',
@@ -167,8 +142,8 @@ export default function EventAddDialog({ isOpen, setIsOpen, date, setEvents }) {
                   <ToggleButton
                     value="MORNING"
                     sx={{
-                      bgcolor: success.lighter,
-                      '&:hover': { bgcolor: success.light },
+                      bgcolor: success.lightest,
+                      '&:hover': { bgcolor: success.lighter },
                       '&.Mui-selected': {
                         bgcolor: success.main,
                         color: 'white',
@@ -181,8 +156,8 @@ export default function EventAddDialog({ isOpen, setIsOpen, date, setEvents }) {
                   <ToggleButton
                     value="AFTERNOON"
                     sx={{
-                      bgcolor: warning.lighter,
-                      '&:hover': { bgcolor: warning.light },
+                      bgcolor: warning.lightest,
+                      '&:hover': { bgcolor: warning.lighter },
                       '&.Mui-selected': {
                         bgcolor: warning.main,
                         color: 'white',
@@ -195,8 +170,8 @@ export default function EventAddDialog({ isOpen, setIsOpen, date, setEvents }) {
                   <ToggleButton
                     value="ALLDAY"
                     sx={{
-                      bgcolor: error.lighter,
-                      '&:hover': { bgcolor: error.light },
+                      bgcolor: error.lightest,
+                      '&:hover': { bgcolor: error.lighter },
                       '&.Mui-selected': {
                         bgcolor: error.main,
                         color: 'white',
@@ -212,9 +187,9 @@ export default function EventAddDialog({ isOpen, setIsOpen, date, setEvents }) {
                       bgcolor: grey[200],
                       '&:hover': { bgcolor: grey[300] },
                       '&.Mui-selected': {
-                        bgcolor: grey[500],
+                        bgcolor: grey[800],
                         color: 'white',
-                        '&:hover': { bgcolor: grey[700] },
+                        '&:hover': { bgcolor: grey[800] },
                       },
                     }}
                   >
@@ -222,14 +197,16 @@ export default function EventAddDialog({ isOpen, setIsOpen, date, setEvents }) {
                   </ToggleButton>
                 </ToggleButtonGroup>
               </FormControl>
-              <FormControl>
-                <TextField
-                  value={otherSchedule}
-                  onChange={(e) => setOtherSchedule(e.target.value)}
-                  variant="standard"
-                  placeholder="その他を入力してください"
-                />
-              </FormControl>
+              {isOther && (
+                <FormControl>
+                  <TextField
+                    value={otherSchedule}
+                    onChange={(e) => setOtherSchedule(e.target.value)}
+                    variant="standard"
+                    placeholder="その他を入力してください"
+                  />
+                </FormControl>
+              )}
             </Stack>
           </DialogContent>
           <DialogActions sx={{ p: '24px' }}>
@@ -275,7 +252,7 @@ export default function EventAddDialog({ isOpen, setIsOpen, date, setEvents }) {
     </>
   );
 }
-EventAddDialog.propTypes = {
+AddScheduleDialog.propTypes = {
   isOpen: PropTypes.bool,
   setIsOpen: PropTypes.func,
   date: PropTypes.any,

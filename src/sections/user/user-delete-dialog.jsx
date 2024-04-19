@@ -11,12 +11,12 @@ import {
   DialogContentText,
 } from '@mui/material';
 
+import Member from 'src/utils/member';
+
 export default function UserDeleteDialog({
   open,
   setOpen,
-  id,
-  lastName,
-  firstName,
+  member,
   updateUsers,
   setDeleteSuccessOpen,
   setDeleteErrorOpen,
@@ -32,17 +32,17 @@ export default function UserDeleteDialog({
     axios
       .delete('http://localhost:8000/api/v1/member/', {
         data: {
-          ids: [id],
+          ids: [member.id],
           userId: userId.replace('_', ''),
           token: session,
         },
       })
-      .then((response) => {
+      .then(() => {
         setOpen(false);
         updateUsers();
         setDeleteSuccessOpen(true);
       })
-      .catch((error) => {
+      .catch(() => {
         setOpen(false);
         setDeleteErrorOpen(true);
       });
@@ -65,7 +65,7 @@ export default function UserDeleteDialog({
       </DialogTitle>
       <DialogContent>
         <DialogContentText id="alert-dialog-description">
-          {lastName} {firstName}
+          {member.lastName} {member.firstName}
         </DialogContentText>
       </DialogContent>
       <DialogActions sx={{ p: '24px' }}>
@@ -83,9 +83,7 @@ export default function UserDeleteDialog({
 UserDeleteDialog.propTypes = {
   open: PropTypes.bool,
   setOpen: PropTypes.func,
-  id: PropTypes.number,
-  lastName: PropTypes.string,
-  firstName: PropTypes.string,
+  member: PropTypes.instanceOf(Member).isRequired,
   updateUsers: PropTypes.func,
   setDeleteSuccessOpen: PropTypes.func,
   setDeleteErrorOpen: PropTypes.func,

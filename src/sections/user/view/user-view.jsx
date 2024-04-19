@@ -1,5 +1,5 @@
-import { useState } from 'react';
 import { useCookies } from 'react-cookie';
+import { useState, useEffect } from 'react';
 
 import Card from '@mui/material/Card';
 import Stack from '@mui/material/Stack';
@@ -7,17 +7,17 @@ import Table from '@mui/material/Table';
 import Button from '@mui/material/Button';
 import Container from '@mui/material/Container';
 import TableBody from '@mui/material/TableBody';
+import { Alert, Snackbar } from '@mui/material';
 import Typography from '@mui/material/Typography';
 import TableContainer from '@mui/material/TableContainer';
 import TablePagination from '@mui/material/TablePagination';
-
-import { getMembers } from 'src/_mock/user';
 
 import Iconify from 'src/components/iconify';
 import Scrollbar from 'src/components/scrollbar';
 
 import Snackbars from '../snackbers';
 import TableNoData from '../table-no-data';
+import Member from '../../../utils/member';
 import UserTableRow from '../user-table-row';
 import UserTableHead from '../user-table-head';
 import UserAddDialog from '../user-add-dialog';
@@ -28,7 +28,7 @@ import { emptyRows, applyFilter, getComparator } from '../utils';
 // ----------------------------------------------------------------------
 
 export default function MembersPage() {
-  const [cookies] = useCookies(['status', '']);
+  const [cookies] = useCookies(['']);
 
   const [page, setPage] = useState(0);
   const [order, setOrder] = useState('asc');
@@ -37,19 +37,25 @@ export default function MembersPage() {
   const [filterName, setFilterName] = useState('');
   const [rowsPerPage, setRowsPerPage] = useState(20);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const [members, setMembers] = useState(getMembers(cookies.userId, cookies.session));
+  const [members, setMembers] = useState([]);
 
   const [deleteSuccessOpen, setDeleteSuccessOpen] = useState(false);
   const [deleteErrorOpen, setDeleteErrorOpen] = useState(false);
   const [editSuccessOpen, setEditSuccessOpen] = useState(false);
   const [editErrorOpen, setEditErrorOpen] = useState(false);
 
-  if (!members) {
-    return <p>エラー</p>;
-  }
+  const [isConnectionError, setIsConnectionError] = useState(false);
+
+  useEffect(() => updateUsers()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    , []);
 
   const updateUsers = () => {
-    setMembers(getMembers(cookies.userId, cookies.session));
+    Member.all(cookies)
+      .then((m) => {
+        setMembers(m);
+      })
+      .catch(() => setIsConnectionError(true));
   };
 
   const handleSort = (event, id) => {
@@ -81,7 +87,7 @@ export default function MembersPage() {
     } else if (selectedIndex > 0) {
       newSelected = newSelected.concat(
         selected.slice(0, selectedIndex),
-        selected.slice(selectedIndex + 1)
+        selected.slice(selectedIndex + 1),
       );
     }
     setSelected(newSelected);
@@ -167,12 +173,7 @@ export default function MembersPage() {
                   .map((row) => (
                     <UserTableRow
                       key={row.id}
-                      lastName={row.lastName}
-                      firstName={row.firstName}
-                      part={row.part}
-                      grade={row.grade}
-                      rate={100}
-                      id={row.id}
+                      member={row}
                       selected={selected.indexOf(row.id) !== -1}
                       handleClick={(event) => handleClick(event, row.id)}
                       updateUsers={updateUsers}
@@ -215,6 +216,21 @@ export default function MembersPage() {
         setEditSuccessOpen={setEditSuccessOpen}
         setEditErrorOpen={setEditErrorOpen}
       />
+      <Snackbar
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+        open={isConnectionError}
+        autoHideDuration={5000}
+        onClose={() => setIsConnectionError(false)}
+      >
+        <Alert
+          severity="error"
+          variant="outlined"
+          sx={{ bgcolor: 'background.paper' }}
+          onClose={() => setIsConnectionError(false)}
+        >
+          予定の取得に失敗しました。
+        </Alert>
+      </Snackbar>
     </Container>
   );
 }

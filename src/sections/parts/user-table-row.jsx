@@ -1,17 +1,10 @@
-import {useState} from 'react';
 import PropTypes from 'prop-types';
 
-import Popover from '@mui/material/Popover';
-import {LinearProgress} from "@mui/material";
 import TableRow from '@mui/material/TableRow';
-import Checkbox from '@mui/material/Checkbox';
-import MenuItem from '@mui/material/MenuItem';
+import { LinearProgress } from '@mui/material';
 import TableCell from '@mui/material/TableCell';
-import Grid from "@mui/material/Unstable_Grid2";
+import Grid from '@mui/material/Unstable_Grid2';
 import Typography from '@mui/material/Typography';
-import IconButton from '@mui/material/IconButton';
-
-import Iconify from 'src/components/iconify';
 
 // ----------------------------------------------------------------------
 
@@ -20,24 +13,12 @@ export default function UserTableRow({
                                        name,
                                        headcount,
                                        rate,
-                                       handleClick,
                                      }) {
-  const [open, setOpen] = useState(null);
-
-  const handleOpenMenu = (event) => {
-    setOpen(event.currentTarget);
-  };
-
-  const handleCloseMenu = () => {
-    setOpen(null);
-  };
 
   return (
     <>
       <TableRow hover tabIndex={-1} role="checkbox" selected={selected}>
-        <TableCell padding="checkbox">
-          <Checkbox disableRipple checked={selected} onChange={handleClick}/>
-        </TableCell>
+        <TableCell padding="checkbox" />
 
         <TableCell>
           <Typography variant="subtitle2" noWrap>
@@ -56,25 +37,25 @@ export default function UserTableRow({
                     variant="determinate"
                     value={rate}
                     sx={{
-                      height: "10px",
-                      backgroundColor: "success.lighter",
-                      borderRadius: "100px",
+                      height: '10px',
+                      backgroundColor: 'success.lighter',
+                      borderRadius: '100px',
                       '& .MuiLinearProgress-bar': {
-                        backgroundColor: "success.main",
-                      }
+                        backgroundColor: 'success.main',
+                      },
 
-                    }}/>
+                    }} />
                   : <LinearProgress
                     variant="determinate"
                     value={rate}
                     sx={{
-                      height: "10px",
-                      backgroundColor: "warning.lighter",
-                      borderRadius: "100px",
+                      height: '10px',
+                      backgroundColor: 'warning.lighter',
+                      borderRadius: '100px',
                       '& .MuiLinearProgress-bar': {
-                        backgroundColor: "warning.main",
+                        backgroundColor: 'warning.main',
                       },
-                    }}/>
+                    }} />
               }
 
             </Grid>
@@ -85,13 +66,16 @@ export default function UserTableRow({
 
         </TableCell>
 
+        {/*
         <TableCell align="right">
           <IconButton onClick={handleOpenMenu}>
             <Iconify icon="eva:more-vertical-fill"/>
           </IconButton>
         </TableCell>
+        */}
       </TableRow>
 
+      {/*
       <Popover
         open={!!open}
         anchorEl={open}
@@ -112,12 +96,12 @@ export default function UserTableRow({
           Delete
         </MenuItem>
       </Popover>
+      */}
     </>
   );
 }
 
 UserTableRow.propTypes = {
-  handleClick: PropTypes.func,
   name: PropTypes.any,
   headcount: PropTypes.number,
   rate: PropTypes.number,

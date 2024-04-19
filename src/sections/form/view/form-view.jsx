@@ -1,5 +1,4 @@
 import axios from 'axios';
-import dayjs from 'dayjs';
 import { useCookies } from 'react-cookie';
 import { useRef, useState, useEffect } from 'react';
 
@@ -16,13 +15,15 @@ import { useRouter } from 'src/routes/hooks';
 
 import { useResponsive } from 'src/hooks/use-responsive';
 
+import Schedule from 'src/utils/schedule';
+
 import { bgGradient } from 'src/theme/css';
 
 import Logo from 'src/components/logo';
 
 import FormSuccess from '../form-success';
-import DatePartSelect from '../date-part-select';
 import Iconify from '../../../components/iconify';
+import DatePartSelects from '../date-part-selects';
 import AttendanceSelect from '../attendance-selects';
 import { checkSession } from '../../../utils/session';
 
@@ -38,9 +39,11 @@ export default function FormView() {
   const [activeStep, setActiveStep] = useState(0);
   const [error, setError] = useState(false);
 
-  const [date, setDate] = useState('');
+  const [date, setDate] = useState("");
   const [part, setPart] = useState('');
   const [grade, setGrade] = useState(null);
+
+  const [dates, setDates] = useState([]);
 
   const [attendances, setAttendances] = useState({});
   const [isSuccess, setIsSuccess] = useState(null);
@@ -78,6 +81,21 @@ export default function FormView() {
           </Button>
         );
       }
+
+      const datesList = [];
+      const now = new Date();
+      Schedule.all(cookies)
+        .then((res) => {
+          res.reverse().forEach((i) => {
+            const compare = (now - i.date) / (1000 * 60 * 60 * 24);
+            if (compare >= 0 && compare <= 7) {
+              datesList.push(i.date);
+            }
+          });
+
+          setDates(datesList);
+        });
+
     } else {
       router.replace('/login');
     }
@@ -117,7 +135,7 @@ export default function FormView() {
           attendances,
           part,
           grade,
-          date: dayjs(date).unix(),
+          date: date.getTime() / 1000,
           userId: userId.replace('_', ''),
           token: session,
         })
@@ -185,11 +203,11 @@ export default function FormView() {
                 sx={{
                   ...(lgUp
                     ? {
-                        p: 5,
-                      }
+                      p: 5,
+                    }
                     : {
-                        p: 3,
-                      }),
+                      p: 3,
+                    }),
                 }}
               >
                 <Typography variant="h3" sx={{ fontSize: '2rem!important' }}>
@@ -202,6 +220,7 @@ export default function FormView() {
                       パートの代表者は部活動があった日の出欠を入力してください。
                       <br />
                       間違えた回答を送信してしまった場合は、もう一度正しい回答を送信してください。
+                      <br />
                     </Typography>
 
                     <Stepper
@@ -230,10 +249,11 @@ export default function FormView() {
                             未選択の項目があります。
                           </Alert>
                         )}
-                        <DatePartSelect
+                        <DatePartSelects
                           date={date}
                           part={part}
                           grade={grade}
+                          dates={dates}
                           setDate={setDate}
                           setPart={setPart}
                           setGrade={setGrade}

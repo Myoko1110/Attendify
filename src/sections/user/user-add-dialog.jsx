@@ -19,7 +19,9 @@ import {
   DialogActions,
 } from '@mui/material';
 
-import { parts } from '../../_mock/part';
+import Grades from 'src/utils/grade';
+
+import Parts from '../../utils/part';
 
 export default function UserAddDialog({ isDialogOpen, setIsDialogOpen, updateUsers }) {
   const [lastName, setLastName] = useState('');
@@ -71,13 +73,13 @@ export default function UserAddDialog({ isDialogOpen, setIsDialogOpen, updateUse
           userId: userId.replace('_', ''),
           token: session,
         })
-        .then((response) => {
+        .then(() => {
           setIsDialogOpen(false);
           updateUsers();
-          resetInputs();
+          resetInputs()
           setAddSuccessSnackbarOpen(true);
         })
-        .catch((error) => {
+        .catch(() => {
           setIsDialogOpen(false);
           setAddErrorSnackbarOpen(true);
         });
@@ -157,9 +159,9 @@ export default function UserAddDialog({ isDialogOpen, setIsDialogOpen, updateUse
                   <MenuItem value="" disabled>
                     選択
                   </MenuItem>
-                  {parts.map((row) => (
-                    <MenuItem value={row.name} key={row.name}>
-                      {row.name}
+                  {Parts.map((row) => (
+                    <MenuItem value={row.en} key={row.en}>
+                      {row.en}
                     </MenuItem>
                   ))}
                 </Select>
@@ -181,12 +183,9 @@ export default function UserAddDialog({ isDialogOpen, setIsDialogOpen, updateUse
                   <MenuItem value="" disabled>
                     選択
                   </MenuItem>
-                  <MenuItem value="Junior1">中1</MenuItem>
-                  <MenuItem value="Junior2">中2</MenuItem>
-                  <MenuItem value="Junior3">中3</MenuItem>
-                  <MenuItem value="High1">高1</MenuItem>
-                  <MenuItem value="High2">高2</MenuItem>
-                  <MenuItem value="High3">高3</MenuItem>
+                  {Object.keys(Grades).map(key => (
+                    <MenuItem value={Grades[key].en}>{Grades[key].jpOmitted}</MenuItem>
+                  ))}
                 </Select>
               </FormControl>
             </Stack>

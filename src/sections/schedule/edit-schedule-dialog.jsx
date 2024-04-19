@@ -3,12 +3,14 @@ import PropTypes from 'prop-types';
 import { useCookies } from 'react-cookie';
 import { useState, useEffect } from 'react';
 
+import { grey } from '@mui/material/colors';
 import {
   Stack,
   Alert,
   Dialog,
   Button,
   Snackbar,
+  TextField,
   DialogTitle,
   FormControl,
   ToggleButton,
@@ -20,37 +22,50 @@ import { info, error, success, warning } from 'src/theme/palette';
 
 import Iconify from 'src/components/iconify';
 
-export default function EventEditDialog({
-  isOpen,
-  setIsOpen,
-  date,
-  scheduleType,
-  updateSchedules,
-}) {
+export default function EditScheduleDialog({
+                                             isOpen,
+                                             setIsOpen,
+                                             date,
+                                             scheduleType,
+                                             updateSchedules,
+                                           }) {
   const [addSuccessSnackbarOpen, setAddSuccessSnackbarOpen] = useState(false);
   const [addErrorSnackbarOpen, setAddErrorSnackbarOpen] = useState(false);
   const [deleteSuccessSnackbarOpen, setDeleteSuccessSnackbarOpen] = useState(false);
   const [deleteErrorSnackbarOpen, setDeleteErrorSnackbarOpen] = useState(false);
 
   const [isError, setIsError] = useState(false);
+  const [isReserved, setIsReserved] = useState(false);
   const [schedule, setSchedule] = useState('');
+  const [otherField, setOtherField] = useState('');
 
   const [cookies] = useCookies(['']);
 
-  useEffect(() => {
-    setSchedule(scheduleType);
-  }, [date, scheduleType]);
-
   const resetInputs = () => {
     setIsError(false);
+    setOtherField("");
   };
 
   const handleSaveClick = (e) => {
     e.preventDefault();
+
     if (!schedule) {
       setIsError(true);
+      setIsReserved(false);
     } else {
       setIsError(false);
+      setIsReserved(false);
+
+      let sendSchedule = schedule;
+      if (schedule === "OTHER") {
+        if (otherField === "WEEKDAY" || otherField === "MORNING" || otherField === "AFTERNOON" || otherField === "ALLDAY" || otherField === "OTHER") {
+          setIsReserved(true);
+          setIsError(false);
+          return;
+        }
+
+        sendSchedule = otherField;
+      }
 
       const { session, userId } = cookies;
       axios
@@ -58,7 +73,7 @@ export default function EventEditDialog({
           userId: userId.replace('_', ''),
           token: session,
           date: Number(date.getTime() / 1000),
-          scheduleType: schedule,
+          scheduleType: sendSchedule,
         })
         .then(() => {
           setIsOpen(false);
@@ -100,14 +115,13 @@ export default function EventEditDialog({
       });
   };
 
-  const handleScheduleChange = (e) => {
-    setSchedule(e.target.value);
-  };
-
   const handleChancelClick = () => {
     setIsOpen(false);
-    setSchedule('');
-    setIsError(false);
+    setTimeout(() => {
+      setSchedule('');
+      setIsError(false);
+      setIsReserved(false);
+    }, 200);
   };
 
   const handleSuccessSnackbarClose = () => {
@@ -116,6 +130,13 @@ export default function EventEditDialog({
   const handleErrorSnackbarClose = () => {
     setAddErrorSnackbarOpen(false);
   };
+
+  useEffect(() => {
+    setSchedule(scheduleType.en);
+    if (scheduleType.en === 'OTHER') {
+      setOtherField(scheduleType.jp);
+    }
+  }, [date, scheduleType]);
 
   return (
     <>
@@ -137,11 +158,12 @@ export default function EventEditDialog({
           <DialogContent sx={{ paddingTop: '10px!important' }}>
             <Stack direction="column" gap="24px">
               {isError && <Alert severity="error">未入力の項目があります。</Alert>}
+              {isReserved && <Alert severity="error">この値は使用できません。</Alert>}
               <FormControl>
                 <ToggleButtonGroup
                   variant="outlined"
                   value={schedule}
-                  onChange={handleScheduleChange}
+                  onChange={(e) => setSchedule(e.target.value)}
                   exclusive
                   fullWidth
                 >
@@ -201,8 +223,32 @@ export default function EventEditDialog({
                   >
                     一日練習
                   </ToggleButton>
+                  <ToggleButton
+                    value="OTHER"
+                    sx={{
+                      bgcolor: grey[200],
+                      '&:hover': { bgcolor: grey[300] },
+                      '&.Mui-selected': {
+                        bgcolor: grey[800],
+                        color: 'white',
+                        '&:hover': { bgcolor: grey[800] },
+                      },
+                    }}
+                  >
+                    その他
+                  </ToggleButton>
                 </ToggleButtonGroup>
               </FormControl>
+              {schedule === 'OTHER' && (
+                <FormControl>
+                  <TextField
+                    value={otherField}
+                    onChange={(e) => setOtherField(e.target.value)}
+                    variant="standard"
+                    placeholder="その他を入力してください"
+                  />
+                </FormControl>
+              )}
             </Stack>
           </DialogContent>
           <Stack direction="row" gap="8px" justifyContent="space-between" sx={{ p: '24px' }}>
@@ -288,10 +334,10 @@ export default function EventEditDialog({
     </>
   );
 }
-EventEditDialog.propTypes = {
+EditScheduleDialog.propTypes = {
   isOpen: PropTypes.bool,
   setIsOpen: PropTypes.func,
   date: PropTypes.any,
-  scheduleType: PropTypes.string,
+  scheduleType: PropTypes.any,
   updateSchedules: PropTypes.func,
 };

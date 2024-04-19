@@ -36,6 +36,7 @@ export const secondary = {
 };
 
 export const info = {
+  lightest: '#e9ffff',
   lighter: '#CAFDF5',
   light: '#61F3F3',
   main: '#00B8D9',
@@ -45,6 +46,7 @@ export const info = {
 };
 
 export const success = {
+  lightest: '#eefff1',
   lighter: '#C8FAD6',
   light: '#5BE49B',
   main: '#00A76F',
@@ -54,6 +56,7 @@ export const success = {
 };
 
 export const warning = {
+  lightest: '#fffaea',
   lighter: '#FFF5CC',
   light: '#FFD666',
   main: '#FFAB00',
@@ -63,6 +66,7 @@ export const warning = {
 };
 
 export const error = {
+  lightest: '#fff4ec',
   lighter: '#FFE9D5',
   light: '#FFAC82',
   main: '#FF5630',

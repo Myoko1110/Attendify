@@ -1,46 +1,48 @@
 import PropTypes from 'prop-types';
-import {useCookies} from "react-cookie";
-import {useState, useEffect} from 'react';
+import { useCookies } from 'react-cookie';
+import { useState, useEffect } from 'react';
 
 import Box from '@mui/material/Box';
 
 import Nav from './nav';
 import Main from './main';
 import Header from './header';
-import {useRouter} from "../../routes/hooks";
-import {checkSession} from "../../utils/session";
-import {useResponsive} from "../../hooks/use-responsive";
+import { useRouter } from '../../routes/hooks';
+import { checksession } from '../../utils/session';
+import { useResponsive } from '../../hooks/use-responsive';
 
 // ----------------------------------------------------------------------
 
-export default function DashboardLayout({children}) {
+export default function DashboardLayout({ children }) {
   const [openNav, setOpenNav] = useState(false);
   const lgUp = useResponsive('up', 'lg');
-  const router = useRouter()
+  const router = useRouter();
 
-  const [cookies,] = useCookies([""]);
+  const [cookies] = useCookies(['']);
   const [isReady, setIsReady] = useState(false);
 
   useEffect(() => {
     if (cookies.session && cookies.userId) {
-      const {session, userId} = cookies;
-      const [status, type] = checkSession(userId, session)
-
-      if (status) {
-        if (type === "executive") {
-          setIsReady(true);
-        } else {
-          router.replace("/form");
-        }
-      } else {
-        router.replace("/login");
-      }
+      checksession(cookies)
+        .then(sessionType => {
+          console.log(sessionType);
+          if (sessionType === 'executive') {
+            setIsReady(true);
+          } else if (sessionType === 'normal') {
+            router.replace('/form');
+          } else {
+            router.replace('/login');
+          }
+        })
+        .catch(() => {
+          router.replace('/500');
+        });
 
     } else {
-      router.replace("/login");
+      router.replace('/login');
     }
 
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (
@@ -48,17 +50,17 @@ export default function DashboardLayout({children}) {
       {isReady && (
         <>
           {!lgUp && (
-            <Header onOpenNav={() => setOpenNav(true)}/>
+            <Header onOpenNav={() => setOpenNav(true)} />
           )}
 
           <Box
             sx={{
               minHeight: 1,
               display: 'flex',
-              flexDirection: {xs: 'column', lg: 'row'},
+              flexDirection: { xs: 'column', lg: 'row' },
             }}
           >
-            <Nav openNav={openNav} onCloseNav={() => setOpenNav(false)}/>
+            <Nav openNav={openNav} onCloseNav={() => setOpenNav(false)} />
 
             <Main>{children}</Main>
           </Box>

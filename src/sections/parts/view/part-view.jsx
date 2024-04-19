@@ -1,26 +1,23 @@
 import { useState } from 'react';
+import { useCookies } from 'react-cookie';
 
 import Card from '@mui/material/Card';
 import Stack from '@mui/material/Stack';
 import Table from '@mui/material/Table';
-import Button from '@mui/material/Button';
 import Container from '@mui/material/Container';
 import TableBody from '@mui/material/TableBody';
 import Typography from '@mui/material/Typography';
 import TableContainer from '@mui/material/TableContainer';
 import TablePagination from '@mui/material/TablePagination';
 
-import { parts } from 'src/_mock/part';
+import Parts from 'src/utils/part';
 
-import Iconify from 'src/components/iconify';
 import Scrollbar from 'src/components/scrollbar';
 
-import TableNoData from '../table-no-data';
+import { emptyRows } from '../utils';
 import PartTableRow from '../user-table-row';
 import PartTableHead from '../user-table-head';
 import TableEmptyRows from '../table-empty-rows';
-import PartTableToolbar from '../user-table-toolbar';
-import { emptyRows, applyFilter, getComparator } from '../utils';
 
 // ----------------------------------------------------------------------
 
@@ -33,9 +30,9 @@ export default function PartsPage() {
 
   const [orderBy, setOrderBy] = useState('name');
 
-  const [filterName, setFilterName] = useState('');
-
   const [rowsPerPage, setRowsPerPage] = useState(20);
+
+  const [cookies,] = useCookies([""]);
 
   const handleSort = (event, id) => {
     const isAsc = orderBy === id && order === 'asc';
@@ -47,7 +44,7 @@ export default function PartsPage() {
 
   const handleSelectAllClick = (event) => {
     if (event.target.checked) {
-      const newSelecteds = parts.map((n) => n.name);
+      const newSelecteds = Parts.map((n) => n.en);
       setSelected(newSelecteds);
       return;
     }
@@ -80,42 +77,26 @@ export default function PartsPage() {
     setPage(0);
     setRowsPerPage(parseInt(event.target.value, 10));
   };
-  const handleFilterByName = (event) => {
-    setPage(0);
-    setFilterName(event.target.value);
-  };
-
-  const dataFiltered = applyFilter({
-    inputData: parts,
-    comparator: getComparator(order, orderBy),
-    filterName,
-  });
-
-  const notFound = !dataFiltered.length && !!filterName;
 
   return (
       <Container>
         <Stack direction="row" alignItems="center" justifyContent="space-between" mb={5}>
           <Typography variant="h3">パート</Typography>
+          {/*
           <Button variant="contained" color="inherit" startIcon={<Iconify icon="eva:plus-fill" />}>
             追加
           </Button>
+          */}
         </Stack>
 
         <Card>
-          <PartTableToolbar
-              numSelected={selected.length}
-              filterName={filterName}
-              onFilterName={handleFilterByName}
-          />
-
           <Scrollbar>
             <TableContainer sx={{ overflow: 'unset' }}>
               <Table sx={{ minWidth: 800 }}>
                 <PartTableHead
                     order={order}
                     orderBy={orderBy}
-                    rowCount={parts.length}
+                    rowCount={Parts.length}
                     numSelected={selected.length}
                     onRequestSort={handleSort}
                     onSelectAllClick={handleSelectAllClick}
@@ -123,30 +104,26 @@ export default function PartsPage() {
                       { id: 'name', label: '名前' },
                       { id: 'headcount', label: '人数' },
                       { id: 'rate', label: '出席率' },
-                      { id: '' },
                     ]}
                 />
                 <TableBody>
-                  {dataFiltered
+                  {Parts
                       .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                       .map((row) => (
                           <PartTableRow
-                              key={row.name}
-                              name={row.name}
-                              part={row.part}
+                              key={row.en}
+                              name={row.en}
                               grade={row.grade}
-                              rate={row.rate}
-                              selected={selected.indexOf(row.name) !== -1}
-                              handleClick={(event) => handleClick(event, row.name)}
+                              rate={row.rate(cookies)}
+                              selected={selected.indexOf(row.en) !== -1}
+                              handleClick={(event) => handleClick(event, row.en)}
                           />
                       ))}
 
                   <TableEmptyRows
                       height={77}
-                      emptyRows={emptyRows(page, rowsPerPage, parts.length)}
+                      emptyRows={emptyRows(page, rowsPerPage, Parts.length)}
                   />
-
-                  {notFound && <TableNoData query={filterName} />}
                 </TableBody>
               </Table>
             </TableContainer>
@@ -155,7 +132,7 @@ export default function PartsPage() {
           <TablePagination
               page={page}
               component="div"
-              count={parts.length}
+              count={Parts.length}
               rowsPerPage={rowsPerPage}
               onPageChange={handleChangePage}
               rowsPerPageOptions={[20, 50, 100]}

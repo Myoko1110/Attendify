@@ -12,6 +12,7 @@ export const FormPage = lazy(() => import('src/pages/form'));
 
 export const LoginPage = lazy(() => import('src/pages/login'));
 export const Page404 = lazy(() => import('src/pages/page-not-found'));
+export const Page500 = lazy(() => import('src/pages/server-error'));
 
 // ----------------------------------------------------------------------
 
@@ -39,6 +40,10 @@ function Router() {
     {
       path: 'form',
       element: <FormPage />,
+    },
+    {
+      path: "500",
+      element: <Page500 />,
     },
     {
       path: '*',
