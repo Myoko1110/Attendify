@@ -13,12 +13,12 @@ import {alpha, useTheme} from '@mui/material/styles';
 
 import {useRouter} from 'src/routes/hooks';
 
+import { checkSession } from 'src/utils/session';
+
 import {bgGradient} from 'src/theme/css';
 
 import Logo from 'src/components/logo';
 import Iconify from 'src/components/iconify';
-
-import {checkSession} from "../../utils/session";
 
 // ----------------------------------------------------------------------
 
@@ -35,16 +35,14 @@ export default function LoginView() {
   
   useEffect(() => {
     if (cookies.session && cookies.userId) {
-      const {session, userId} = cookies;
-
-      const [status, type] = checkSession(userId, session)
-      if (status) {
-        if (type === "executive") {
-          router.replace("/");
-        } else {
-          router.replace("/form");
-        }
-      }
+      checkSession(cookies)
+        .then(sessionType => {
+          if (sessionType === "executive") {
+            router.replace("/");
+          } else {
+            router.replace("/form");
+          }
+        })
     }
 
     const code = new URLSearchParams(search).get('code');

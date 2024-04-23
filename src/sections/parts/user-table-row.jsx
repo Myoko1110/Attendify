@@ -1,4 +1,6 @@
+import { useState } from 'react';
 import PropTypes from 'prop-types';
+import { useCookies } from 'react-cookie';
 
 import TableRow from '@mui/material/TableRow';
 import { LinearProgress } from '@mui/material';
@@ -6,14 +8,24 @@ import TableCell from '@mui/material/TableCell';
 import Grid from '@mui/material/Unstable_Grid2';
 import Typography from '@mui/material/Typography';
 
+import Attendances from 'src/utils/attendances';
+
 // ----------------------------------------------------------------------
 
 export default function UserTableRow({
                                        selected,
                                        name,
                                        headcount,
-                                       rate,
                                      }) {
+  const [cookies,] = useCookies(['']);
+  const [rate, setRate] = useState(null);
+
+  useState(() => {
+    Attendances.byPart(name, cookies)
+      .then(res => {
+        setRate(res.rate);
+      });
+  });
 
   return (
     <>
@@ -31,36 +43,44 @@ export default function UserTableRow({
         <TableCell align="center">
           <Grid container alignItems="center" justify="spaceBetween">
             <Grid item xs={6}>
-              {
-                rate >= 80
-                  ? <LinearProgress
-                    variant="determinate"
-                    value={rate}
-                    sx={{
-                      height: '10px',
-                      backgroundColor: 'success.lighter',
-                      borderRadius: '100px',
-                      '& .MuiLinearProgress-bar': {
-                        backgroundColor: 'success.main',
-                      },
+              {rate ? (
+                <>
+                  {
+                    rate >= 80
+                      ? <LinearProgress
+                        variant="determinate"
+                        value={rate}
+                        sx={{
+                          height: '10px',
+                          backgroundColor: 'success.lighter',
+                          borderRadius: '100px',
+                          '& .MuiLinearProgress-bar': {
+                            backgroundColor: 'success.main',
+                          },
 
-                    }} />
-                  : <LinearProgress
-                    variant="determinate"
-                    value={rate}
-                    sx={{
-                      height: '10px',
-                      backgroundColor: 'warning.lighter',
-                      borderRadius: '100px',
-                      '& .MuiLinearProgress-bar': {
-                        backgroundColor: 'warning.main',
-                      },
-                    }} />
-              }
+                        }} />
+                      : <LinearProgress
+                        variant="determinate"
+                        value={rate}
+                        sx={{
+                          height: '10px',
+                          backgroundColor: 'warning.lighter',
+                          borderRadius: '100px',
+                          '& .MuiLinearProgress-bar': {
+                            backgroundColor: 'warning.main',
+                          },
+                        }} />
+                  }</>
+              ) : (
+                <Typography variant="body2">データなし</Typography>
+              )}
+
 
             </Grid>
             <Grid item xs={6}>
-              {rate.toFixed(2)}%
+              <Typography variant="body2">{rate && (
+                <>{rate.toFixed(2)}%</>
+              )}</Typography>
             </Grid>
           </Grid>
 
@@ -104,6 +124,5 @@ export default function UserTableRow({
 UserTableRow.propTypes = {
   name: PropTypes.any,
   headcount: PropTypes.number,
-  rate: PropTypes.number,
   selected: PropTypes.any,
 };

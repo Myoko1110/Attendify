@@ -8,7 +8,7 @@ import Nav from './nav';
 import Main from './main';
 import Header from './header';
 import { useRouter } from '../../routes/hooks';
-import { checksession } from '../../utils/session';
+import { checkSession } from '../../utils/session';
 import { useResponsive } from '../../hooks/use-responsive';
 
 // ----------------------------------------------------------------------
@@ -23,9 +23,8 @@ export default function DashboardLayout({ children }) {
 
   useEffect(() => {
     if (cookies.session && cookies.userId) {
-      checksession(cookies)
+      checkSession(cookies)
         .then(sessionType => {
-          console.log(sessionType);
           if (sessionType === 'executive') {
             setIsReady(true);
           } else if (sessionType === 'normal') {

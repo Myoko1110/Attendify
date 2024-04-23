@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import PropTypes from 'prop-types';
+import { useCookies } from 'react-cookie';
 
 import Popover from '@mui/material/Popover';
 import TableRow from '@mui/material/TableRow';
@@ -12,6 +13,7 @@ import IconButton from '@mui/material/IconButton';
 import LinearProgress from '@mui/material/LinearProgress';
 
 import Member from 'src/utils/member';
+import Attendances from 'src/utils/attendances';
 
 import Iconify from 'src/components/iconify';
 
@@ -21,18 +23,21 @@ import UserDeleteDialog from './user-delete-dialog';
 // ----------------------------------------------------------------------
 
 export default function UserTableRow({
-                                       member,
-                                       selected,
-                                       handleClick,
-                                       updateUsers,
-                                       setDeleteSuccessOpen,
-                                       setDeleteErrorOpen,
-                                       setEditSuccessOpen,
-                                       setEditErrorOpen,
-                                     }) {
+  member,
+  selected,
+  handleClick,
+  updateUsers,
+  setDeleteSuccessOpen,
+  setDeleteErrorOpen,
+  setEditSuccessOpen,
+  setEditErrorOpen,
+}) {
   const [open, setOpen] = useState(false);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [editDialogOpen, setEditDialogOpen] = useState(false);
+  const [rate, setRate] = useState(null);
+
+  const [cookies] = useCookies(['']);
 
   const handleOpenMenu = (event) => {
     setOpen(event.currentTarget);
@@ -50,6 +55,12 @@ export default function UserTableRow({
   const handleCloseMenu = () => {
     setOpen(null);
   };
+
+  useState(() => {
+    Attendances.byMember(member.id, cookies).then((r) => {
+      setRate(r.rate);
+    });
+  });
 
   return (
     <>
@@ -71,36 +82,42 @@ export default function UserTableRow({
         <TableCell align="center">
           <Grid container alignItems="center" justify="spaceBetween">
             <Grid item xs={6}>
-              {member.rate >= 80 ? (
-                <LinearProgress
-                  variant="determinate"
-                  value={member.rate}
-                  sx={{
-                    height: '10px',
-                    backgroundColor: 'success.lighter',
-                    borderRadius: '100px',
-                    '& .MuiLinearProgress-bar': {
-                      backgroundColor: 'success.main',
-                    },
-                  }}
-                />
+              {rate ? (
+                <>
+                  {rate >= 80 ? (
+                    <LinearProgress
+                      variant="determinate"
+                      value={rate}
+                      sx={{
+                        height: '10px',
+                        backgroundColor: 'success.lighter',
+                        borderRadius: '100px',
+                        '& .MuiLinearProgress-bar': {
+                          backgroundColor: 'success.main',
+                        },
+                      }}
+                    />
+                  ) : (
+                    <LinearProgress
+                      variant="determinate"
+                      value={rate}
+                      sx={{
+                        height: '10px',
+                        backgroundColor: 'warning.lighter',
+                        borderRadius: '100px',
+                        '& .MuiLinearProgress-bar': {
+                          backgroundColor: 'warning.main',
+                        },
+                      }}
+                    />
+                  )}
+                </>
               ) : (
-                <LinearProgress
-                  variant="determinate"
-                  value={member.rate}
-                  sx={{
-                    height: '10px',
-                    backgroundColor: 'warning.lighter',
-                    borderRadius: '100px',
-                    '& .MuiLinearProgress-bar': {
-                      backgroundColor: 'warning.main',
-                    },
-                  }}
-                />
+                <Typography variant="body2">データなし</Typography>
               )}
             </Grid>
             <Grid item xs={6}>
-              <Typography variant="body2">{member.rate.toFixed(2)}%</Typography>
+              <Typography variant="body2">{rate && <>{rate.toFixed(2)}%</>}</Typography>
             </Grid>
           </Grid>
         </TableCell>
@@ -155,7 +172,6 @@ export default function UserTableRow({
 }
 
 UserTableRow.propTypes = {
-  
   member: PropTypes.instanceOf(Member).isRequired,
   selected: PropTypes.any,
   handleClick: PropTypes.func,

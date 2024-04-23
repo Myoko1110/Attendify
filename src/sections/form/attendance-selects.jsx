@@ -20,6 +20,7 @@ export default function AttendanceSelect({
   handlePrev,
   handleSend,
   error,
+  setActiveStep,
 }) {
   const [cookies] = useCookies(['status', '']);
 
@@ -46,11 +47,10 @@ export default function AttendanceSelect({
         setIsExists(false);
       });
 
-    Member.byPartAndGrade(part, grade, cookies)
-      .then((m) => {
-        setMembers(m);
-      });
-    
+    Member.byPartAndGrade(part, grade, cookies).then((m) => {
+      setMembers(m);
+    });
+
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -112,9 +112,14 @@ export default function AttendanceSelect({
           <Typography variant="h4" sx={{ my: 1 }}>
             既に回答されています
           </Typography>
-          <Button onClick={handleFix} variant="contained">
-            回答を修正
-          </Button>
+          <Stack direction="row" gap={1}>
+            <Button onClick={() => setActiveStep(0)} variant="outlined">
+              戻る
+            </Button>
+            <Button onClick={handleFix} variant="contained">
+              回答を修正
+            </Button>
+          </Stack>
         </Stack>
       )}
     </>
@@ -129,4 +134,5 @@ AttendanceSelect.propTypes = {
   handlePrev: PropTypes.func,
   handleSend: PropTypes.func,
   error: PropTypes.bool,
+  setActiveStep: PropTypes.func,
 };

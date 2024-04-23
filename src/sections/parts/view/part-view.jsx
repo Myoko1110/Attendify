@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import { useCookies } from 'react-cookie';
 
 import Card from '@mui/material/Card';
 import Stack from '@mui/material/Stack';
@@ -31,8 +30,6 @@ export default function PartsPage() {
   const [orderBy, setOrderBy] = useState('name');
 
   const [rowsPerPage, setRowsPerPage] = useState(20);
-
-  const [cookies,] = useCookies([""]);
 
   const handleSort = (event, id) => {
     const isAsc = orderBy === id && order === 'asc';
@@ -114,7 +111,6 @@ export default function PartsPage() {
                               key={row.en}
                               name={row.en}
                               grade={row.grade}
-                              rate={row.rate(cookies)}
                               selected={selected.indexOf(row.en) !== -1}
                               handleClick={(event) => handleClick(event, row.en)}
                           />

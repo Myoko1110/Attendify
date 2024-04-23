@@ -69,6 +69,7 @@ export default function AttendanceMemberSelect({ id, lastName, firstName, setAtt
           <TextField
             type="text"
             variant="standard"
+            placeholder="入力してください"
             InputLabelProps={{ shrink: true }}
             sx={{ ml: 2, fontSize: '16px' }}
             value={otherValue}

@@ -1,118 +1,183 @@
 import { faker } from '@faker-js/faker';
+import { useCookies } from 'react-cookie';
+import { useState, useEffect } from 'react';
 
 import Container from '@mui/material/Container';
 import Grid from '@mui/material/Unstable_Grid2';
 import Typography from '@mui/material/Typography';
 
+import Attendances from 'src/utils/attendances';
+
+import { grey, error, success, warning } from 'src/theme/palette';
+
 import Iconify from 'src/components/iconify';
 
 import AppTasks from '../app-tasks';
 import AppNewsUpdate from '../app-news-update';
+import AttendanceChart from '../attendance-chart';
 import AppOrderTimeline from '../app-order-timeline';
-import AppCurrentVisits from '../app-current-visits';
-import AppWebsiteVisits from '../app-website-visits';
-import AppWidgetSummary from '../app-widget-summary';
 import AppTrafficBySite from '../app-traffic-by-site';
+import RateWidgetSummary from '../rate-widget-summary';
 import AppCurrentSubject from '../app-current-subject';
 import AppConversionRates from '../app-conversion-rates';
+import AttendanceRateChart from '../attendance-rate-chart';
 
 // ----------------------------------------------------------------------
 
 export default function HomeView() {
+  const [cookies] = useCookies(['']);
+
+  const [allAttendances, setAllAttendances] = useState(new Attendances());
+
+  const [dates, setDates] = useState([]);
+  const [attendanceCount, setAttendanceCount] = useState([]);
+  const [absenceCount, setAbsenceCount] = useState([]);
+  const [tardinessCount, setTardinessCount] = useState([]);
+  const [earlyDepartureCount, setEarlyDepartureCount] = useState([]);
+  const [othersCount, setOthersCount] = useState([]);
+
+  const [rateDates, setRateDates] = useState([]);
+  const [attendanceRates, setAttendanceRates] = useState([]);
+
+  useEffect(() => {
+    Attendances.all(cookies).then((res) => {
+      setAllAttendances(res);
+
+      const now = new Date();
+
+      const datesC = [];
+      const attendanceC = [];
+      const absenceC = [];
+      const tardinessC = [];
+      const earlyDepartureC = [];
+      const othersC = [];
+      for (let i = 0; i < 30; i += 1) {
+        const d = new Date(now);
+        d.setDate(d.getDate() - i);
+
+        const dateAttendance = res.byDate(d);
+        if (dateAttendance.length !== 0) {
+          datesC.push(d.getTime());
+
+          attendanceC.push(dateAttendance.attendanceCount);
+          absenceC.push(dateAttendance.absenceCount);
+          tardinessC.push(dateAttendance.tardinessCount);
+          earlyDepartureC.push(dateAttendance.earlyDepartureCount);
+          othersC.push(dateAttendance.othersCount);
+        }
+      }
+
+      setDates(datesC);
+      setAttendanceCount(attendanceC);
+      setAbsenceCount(absenceC);
+      setTardinessCount(tardinessC);
+      setEarlyDepartureCount(earlyDepartureC);
+      setOthersCount(othersC);
+
+      const dr = [];
+      const ar = [];
+      for (let i = 0; i < 30; i += 1) {
+        const d = new Date(now);
+        d.setDate(d.getDate() - i);
+
+        const dateAttendance = res.byDate(d);
+        if (dateAttendance.length !== 0) {
+          dr.push(d.getTime());
+          ar.push(dateAttendance.rate);
+        }
+      }
+
+      setRateDates(dr);
+      setAttendanceRates(ar);
+    });
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   return (
-    <Container maxWidth="xl">
+    <Container>
       <Typography variant="h3" sx={{ mb: 5 }}>
         ホーム
       </Typography>
 
       <Grid container spacing={3}>
-        <Grid xs={12} sm={6} md={3}>
-          <AppWidgetSummary
-            title="Weekly Sales"
-            total={714000}
-            color="success"
-            icon={<img alt="icon" src="/assets/icons/glass/ic_glass_bag.png" />}
-          />
-        </Grid>
-
-        <Grid xs={12} sm={6} md={3}>
-          <AppWidgetSummary
-            title="New Users"
-            total={1352831}
-            color="info"
-            icon={<img alt="icon" src="/assets/icons/glass/ic_glass_users.png" />}
-          />
-        </Grid>
-
-        <Grid xs={12} sm={6} md={3}>
-          <AppWidgetSummary
-            title="Item Orders"
-            total={1723315}
+        <Grid xs={12} sm={6} md={4}>
+          <RateWidgetSummary
+            title="今日の出席率"
+            value={allAttendances.today.rate}
             color="warning"
-            icon={<img alt="icon" src="/assets/icons/glass/ic_glass_buy.png" />}
+            rate={100}
           />
         </Grid>
 
-        <Grid xs={12} sm={6} md={3}>
-          <AppWidgetSummary
-            title="Bug Reports"
-            total={234}
-            color="error"
-            icon={<img alt="icon" src="/assets/icons/glass/ic_glass_message.png" />}
+        <Grid xs={12} sm={6} md={4}>
+          <RateWidgetSummary title="全体の出席率" value={allAttendances.rate} color="success" />
+        </Grid>
+
+        <Grid xs={12} sm={6} md={4}>
+          <RateWidgetSummary
+            title="今月の出席率"
+            value={allAttendances.thisMonth.rate}
+            color="info"
           />
         </Grid>
 
-        <Grid xs={12} md={6} lg={8}>
-          <AppWebsiteVisits
-            title="Website Visits"
-            subheader="(+43%) than last year"
+        <Grid xs={12} md={6} lg={6}>
+          <AttendanceChart
+            title="出欠の内訳"
             chart={{
-              labels: [
-                '01/01/2003',
-                '02/01/2003',
-                '03/01/2003',
-                '04/01/2003',
-                '05/01/2003',
-                '06/01/2003',
-                '07/01/2003',
-                '08/01/2003',
-                '09/01/2003',
-                '10/01/2003',
-                '11/01/2003',
-              ],
+              labels: dates,
               series: [
                 {
-                  name: 'Team A',
+                  name: '出席',
                   type: 'column',
                   fill: 'solid',
-                  data: [23, 11, 22, 27, 13, 22, 37, 21, 44, 22, 30],
+                  data: attendanceCount,
+                  color: success.main,
                 },
                 {
-                  name: 'Team B',
-                  type: 'area',
-                  fill: 'gradient',
-                  data: [44, 55, 41, 67, 22, 43, 21, 41, 56, 27, 43],
-                },
-                {
-                  name: 'Team C',
-                  type: 'line',
+                  name: '欠席',
+                  type: 'column',
                   fill: 'solid',
-                  data: [30, 25, 36, 30, 45, 35, 64, 52, 59, 36, 39],
+                  data: absenceCount,
+                  color: error.main,
+                },
+                {
+                  name: '遅刻',
+                  type: 'column',
+                  fill: 'solid',
+                  data: tardinessCount,
+                  color: warning.main,
+                },
+                {
+                  name: '早退',
+                  type: 'column',
+                  fill: 'solid',
+                  data: earlyDepartureCount,
+                  color: warning.main,
+                },
+                {
+                  name: 'その他',
+                  type: 'column',
+                  fill: 'solid',
+                  data: othersCount,
+                  color: grey[500],
                 },
               ],
             }}
           />
         </Grid>
 
-        <Grid xs={12} md={6} lg={4}>
-          <AppCurrentVisits
-            title="Current Visits"
+        <Grid xs={12} md={6} lg={6}>
+          <AttendanceRateChart
+            title="出席率の推移"
             chart={{
+              labels: rateDates,
               series: [
-                { label: 'America', value: 4344 },
-                { label: 'Asia', value: 5435 },
-                { label: 'Europe', value: 1443 },
-                { label: 'Africa', value: 4443 },
+                {
+                  name: '出席率',
+                  data: attendanceRates,
+                },
               ],
             }}
           />

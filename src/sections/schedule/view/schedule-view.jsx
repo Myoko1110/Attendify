@@ -85,7 +85,7 @@ export default function SchedulePage() {
   }, []);
 
   return (
-    <Container sx={{px: 1}}>
+    <Container>
       <Stack direction="row" alignItems="center" justifyContent="space-between" mb={5}>
         <Typography variant="h3">予定</Typography>
         {/*
@@ -106,11 +106,11 @@ export default function SchedulePage() {
           locales={[jaLocale]}
           locale="ja"
           headerToolbar={{
-            left: 'dayGridMonth',
-            center: 'prev,title,next',
+            left: 'prev,title,next',
+            center: '',
             right: 'today',
           }}
-          height="79vh"
+          height="calc(100vh - 200px)"
           eventClick={handleEventClick}
           dateClick={handleDateClick}
           events={events}

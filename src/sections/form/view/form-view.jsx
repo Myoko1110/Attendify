@@ -16,16 +16,16 @@ import { useRouter } from 'src/routes/hooks';
 import { useResponsive } from 'src/hooks/use-responsive';
 
 import Schedule from 'src/utils/schedule';
+import { checkSession } from 'src/utils/session';
 
 import { bgGradient } from 'src/theme/css';
 
 import Logo from 'src/components/logo';
+import Iconify from 'src/components/iconify';
 
 import FormSuccess from '../form-success';
-import Iconify from '../../../components/iconify';
 import DatePartSelects from '../date-part-selects';
 import AttendanceSelect from '../attendance-selects';
-import { checkSession } from '../../../utils/session';
 
 // ----------------------------------------------------------------------
 
@@ -39,7 +39,7 @@ export default function FormView() {
   const [activeStep, setActiveStep] = useState(0);
   const [error, setError] = useState(false);
 
-  const [date, setDate] = useState("");
+  const [date, setDate] = useState('');
   const [part, setPart] = useState('');
   const [grade, setGrade] = useState(null);
 
@@ -54,48 +54,49 @@ export default function FormView() {
 
   useEffect(() => {
     if (cookies.session && cookies.userId) {
-      const { session, userId } = cookies;
-
-      const [status, type] = checkSession(userId, session);
-      if (!status) {
-        router.replace('/login');
-      }
-      setIsReady(true);
-
-      if (type === 'executive') {
-        backToDashboardRef.current = (
-          <Button
-            onClick={handleBack}
-            color="inherit"
-            sx={{
-              mb: 1,
-            }}
-            alignItems="center"
-          >
-            <Stack direction="row" sx={{ width: 'fit-content' }}>
-              <Iconify icon="bx:arrow-back" />
-              <Typography variant="body2" sx={{ ml: 1 }}>
-                ダッシュボードへ戻る
-              </Typography>
-            </Stack>
-          </Button>
-        );
-      }
+      checkSession(cookies)
+        .then((sessionType) => {
+          if (!sessionType) {
+            router.replace('/login');
+          } else {
+            setIsReady(true);
+            if (sessionType === 'executive') {
+              backToDashboardRef.current = (
+                <Button
+                  onClick={handleBack}
+                  color="inherit"
+                  sx={{
+                    mb: 1,
+                  }}
+                  alignItems="center"
+                >
+                  <Stack direction="row" sx={{ width: 'fit-content' }}>
+                    <Iconify icon="bx:arrow-back" />
+                    <Typography variant="body2" sx={{ ml: 1 }}>
+                      ダッシュボードへ戻る
+                    </Typography>
+                  </Stack>
+                </Button>
+              );
+            }
+          }
+        })
+        .catch(() => {
+          router.replace('/500');
+        });
 
       const datesList = [];
       const now = new Date();
-      Schedule.all(cookies)
-        .then((res) => {
-          res.reverse().forEach((i) => {
-            const compare = (now - i.date) / (1000 * 60 * 60 * 24);
-            if (compare >= 0 && compare <= 7) {
-              datesList.push(i.date);
-            }
-          });
-
-          setDates(datesList);
+      Schedule.all(cookies).then((res) => {
+        res.reverse().forEach((i) => {
+          const compare = (now - i.date) / (1000 * 60 * 60 * 24);
+          if (compare >= 0 && compare <= 7) {
+            datesList.push(i.date);
+          }
         });
 
+        setDates(datesList);
+      });
     } else {
       router.replace('/login');
     }
@@ -203,11 +204,11 @@ export default function FormView() {
                 sx={{
                   ...(lgUp
                     ? {
-                      p: 5,
-                    }
+                        p: 5,
+                      }
                     : {
-                      p: 3,
-                    }),
+                        p: 3,
+                      }),
                 }}
               >
                 <Typography variant="h3" sx={{ fontSize: '2rem!important' }}>
@@ -274,6 +275,7 @@ export default function FormView() {
                         handlePrev={handlePrev}
                         handleSend={handleSend}
                         error={error}
+                        setActiveStep={setActiveStep}
                       />
                     )}
                   </>

@@ -1,9 +1,10 @@
-import {lazy, Suspense} from 'react';
-import {Outlet, useRoutes} from 'react-router-dom';
+import { lazy, Suspense } from 'react';
+import { Outlet, useRoutes } from 'react-router-dom';
 
 import DashboardLayout from 'src/layouts/dashboard';
 
 export const IndexPage = lazy(() => import('src/pages/home'));
+export const AttendancePage = lazy(() => import('src/pages/attendance'));
 export const MembersPage = lazy(() => import('src/pages/members'));
 export const SchedulePage = lazy(() => import('src/pages/schedule'));
 export const PartsPage = lazy(() => import('src/pages/parts'));
@@ -28,6 +29,7 @@ function Router() {
       ),
       children: [
         { element: <IndexPage />, index: true },
+        { path: 'attendance', element: <AttendancePage /> },
         { path: 'members', element: <MembersPage /> },
         { path: 'parts', element: <PartsPage /> },
         { path: 'schedule', element: <SchedulePage /> },
@@ -42,7 +44,7 @@ function Router() {
       element: <FormPage />,
     },
     {
-      path: "500",
+      path: '500',
       element: <Page500 />,
     },
     {
@@ -52,4 +54,4 @@ function Router() {
   ]);
 }
 
-export default Router
+export default Router;

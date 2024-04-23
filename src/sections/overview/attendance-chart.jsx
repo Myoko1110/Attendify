@@ -8,14 +8,14 @@ import Chart, { useChart } from 'src/components/chart';
 
 // ----------------------------------------------------------------------
 
-export default function AppWebsiteVisits({ title, subheader, chart, ...other }) {
+export default function AttendanceChart({ title, subheader, chart, ...other }) {
   const { labels, colors, series, options } = chart;
 
   const chartOptions = useChart({
     colors,
     plotOptions: {
       bar: {
-        columnWidth: '16%',
+        borderRadius: 0
       },
     },
     fill: {
@@ -24,18 +24,27 @@ export default function AppWebsiteVisits({ title, subheader, chart, ...other }) 
     labels,
     xaxis: {
       type: 'datetime',
+      labels: {
+        format: 'MM/dd',
+      }
     },
     tooltip: {
-      shared: true,
+      shared: false,
       intersect: false,
+      x: {
+        format: 'MM/dd',
+      },
       y: {
         formatter: (value) => {
           if (typeof value !== 'undefined') {
-            return `${value.toFixed(0)} visits`;
+            return `${value.toFixed(0)} 人`;
           }
           return value;
         },
       },
+    },
+    chart: {
+      stacked: true,
     },
     ...options,
   });
@@ -47,7 +56,7 @@ export default function AppWebsiteVisits({ title, subheader, chart, ...other }) 
       <Box sx={{ p: 3, pb: 1 }}>
         <Chart
           dir="ltr"
-          type="line"
+          type="bar"
           series={series}
           options={chartOptions}
           width="100%"
@@ -58,7 +67,7 @@ export default function AppWebsiteVisits({ title, subheader, chart, ...other }) 
   );
 }
 
-AppWebsiteVisits.propTypes = {
+AttendanceChart.propTypes = {
   chart: PropTypes.object,
   subheader: PropTypes.string,
   title: PropTypes.string,

@@ -184,7 +184,7 @@ export default function UserAddDialog({ isDialogOpen, setIsDialogOpen, updateUse
                     選択
                   </MenuItem>
                   {Object.keys(Grades).map(key => (
-                    <MenuItem value={Grades[key].en}>{Grades[key].jpOmitted}</MenuItem>
+                    <MenuItem key={Grades[key].en} value={Grades[key].en}>{Grades[key].jpOmitted}</MenuItem>
                   ))}
                 </Select>
               </FormControl>
