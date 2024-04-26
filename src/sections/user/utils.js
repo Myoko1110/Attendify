@@ -35,6 +35,82 @@ export function getComparator(order, orderBy) {
     : (a, b) => -descendingComparator(a, b, orderBy);
 }
 
+export function getMemberComparator(order, orderBy) {
+  return order === 'desc'
+    ? (a, b) => {
+        if (orderBy === 'name') return descendingNameComparator(a, b);
+        if (orderBy === 'part') return descendingPartComparator(a, b);
+        if (orderBy === 'rate') return descendingRateComparator(a, b);
+        return descendingComparator(a, b, orderBy);
+      }
+    : (a, b) => {
+        if (orderBy === 'name') return -descendingNameComparator(a, b);
+        if (orderBy === 'part') return -descendingPartComparator(a, b);
+        if (orderBy === 'rate') return -descendingRateComparator(a, b);
+        return -descendingComparator(a, b, orderBy);
+      };
+}
+
+function descendingNameComparator(a, b) {
+  if (`${a.lastName}${a.firstName}` === null) {
+    return 1;
+  }
+  if (`${b.lastName}${b.firstName}` === null) {
+    return -1;
+  }
+  if (`${b.lastName}${b.firstName}` < `${a.lastName}${a.firstName}`) {
+    return -1;
+  }
+  if (`${b.lastName}${b.firstName}` > `${a.lastName}${a.firstName}`) {
+    return 1;
+  }
+  return 0;
+}
+
+function descendingRateComparator(a, b) {
+  if (a.rate === null) {
+    return 1;
+  }
+  if (b.rate === null) {
+    return -1;
+  }
+  if (b.rate < a.rate) {
+    return -1;
+  }
+  if (b.rate > a.rate) {
+    return 1;
+  }
+  return 0;
+}
+
+const partList = ['Fl', 'Cl', 'Wr', 'Sax', 'Tp', 'Tb', 'Hr', 'Bass', 'Per'];
+function descendingPartComparator(a, b) {
+  const aIndex = partList.indexOf(a.part);
+  const bIndex = partList.indexOf(b.part);
+
+  if (aIndex === -1) {
+    return 1;
+  }
+  if (bIndex === -1) {
+    return -1;
+  }
+
+  if (aIndex === bIndex) {
+    if (b.grade.num > a.grade.num) {
+      return -1;
+    }
+    return 1;
+  }
+
+  if (bIndex < aIndex) {
+    return -1;
+  }
+  if (bIndex > aIndex) {
+    return 1;
+  }
+  return 0;
+}
+
 export function applyFilter({ inputData, comparator, filterName }) {
   const stabilizedThis = inputData.map((el, index) => [el, index]);
 
@@ -47,12 +123,10 @@ export function applyFilter({ inputData, comparator, filterName }) {
   inputData = stabilizedThis.map((el) => el[0]);
 
   if (filterName) {
-    inputData = inputData.filter(
-      (user) => {
-        if (`${user.lastName}${user.firstName}`.indexOf(filterName.toLowerCase()) !== -1) return true;
-        return `${user.lastName} ${user.firstName}`.indexOf(filterName.toLowerCase()) !== -1;
-      }
-    );
+    inputData = inputData.filter((user) => {
+      if (`${user.lastName}${user.firstName}`.indexOf(filterName.toLowerCase()) !== -1) return true;
+      return `${user.lastName} ${user.firstName}`.indexOf(filterName.toLowerCase()) !== -1;
+    });
   }
 
   return inputData;

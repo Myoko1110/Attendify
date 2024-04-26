@@ -1,5 +1,4 @@
-import axios from 'axios';
-
+import instance from './api';
 import ScheduleType from './schedule-type';
 
 export default class Schedule {
@@ -9,27 +8,28 @@ export default class Schedule {
   }
 
   add({ userId, session }) {
-    return axios
-      .post('http://localhost:8000/api/v1/schedule/', {
+    return instance
+      .post('/api/v1/schedule/', {
         userId: userId.replace('_', ''),
         token: session,
         date: Number(this.date.getTime() / 1000),
         scheduleType: this.type.export(),
       })
-      .then(res => res)
-      .catch(err => err);
+      .then((res) => res);
   }
 
   static all({ userId, session }) {
-    return axios
-      .get('http://localhost:8000/api/v1/schedule/', {
+    return instance
+      .get('/api/v1/schedule/', {
         params: {
           userId: userId.replace('_', ''),
           token: session,
         },
       })
       .then((res) =>
-        res.data.schedules.map(i => new Schedule(new Date(i.date), new ScheduleType(i.scheduleType))))
-      .catch(err => err);
+        res.data.schedules.map(
+          (i) => new Schedule(new Date(i.date), new ScheduleType(i.scheduleType))
+        )
+      );
   }
 }

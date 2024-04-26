@@ -3,10 +3,13 @@ import PropTypes from 'prop-types';
 
 import Tooltip from '@mui/material/Tooltip';
 import Toolbar from '@mui/material/Toolbar';
+import { TablePagination } from '@mui/material';
 import Typography from '@mui/material/Typography';
 import IconButton from '@mui/material/IconButton';
 import OutlinedInput from '@mui/material/OutlinedInput';
 import InputAdornment from '@mui/material/InputAdornment';
+
+import Member from 'src/utils/member';
 
 import Iconify from 'src/components/iconify';
 
@@ -22,6 +25,11 @@ export default function UserTableToolbar({
   updateUsers,
   setDeleteSuccessOpen,
   setDeleteErrorOpen,
+  page,
+  members,
+  rowsPerPage,
+  handleChangePage,
+  handleChangeRowsPerPage,
 }) {
   const [open, setOpen] = useState(false);
 
@@ -47,23 +55,35 @@ export default function UserTableToolbar({
           {selected.length} selected
         </Typography>
       ) : (
-        <OutlinedInput
-          value={filterName}
-          onChange={onFilterName}
-          placeholder="検索"
-          startAdornment={
-            <InputAdornment position="start">
-              <Iconify
-                icon="eva:search-fill"
-                sx={{ color: 'text.disabled', width: 20, height: 20 }}
-              />
-            </InputAdornment>
-          }
-        />
+        <>
+          <OutlinedInput
+            value={filterName}
+            onChange={onFilterName}
+            placeholder="検索"
+            startAdornment={
+              <InputAdornment position="start">
+                <Iconify
+                  icon="eva:search-fill"
+                  sx={{ color: 'text.disabled', width: 20, height: 20 }}
+                />
+              </InputAdornment>
+            }
+          />
+          <TablePagination
+            page={page}
+            component="div"
+            count={members.length}
+            rowsPerPage={rowsPerPage}
+            onPageChange={handleChangePage}
+            rowsPerPageOptions={[20, 50, 100]}
+            onRowsPerPageChange={handleChangeRowsPerPage}
+            labelRowsPerPage="1ページあたりの表示数"
+          />
+        </>
       )}
 
       {selected.length > 0 && (
-        <Tooltip title="Delete">
+        <Tooltip title="削除">
           <IconButton onClick={handleClick}>
             <Iconify icon="eva:trash-2-fill" />
           </IconButton>
@@ -90,4 +110,9 @@ UserTableToolbar.propTypes = {
   updateUsers: PropTypes.func,
   setDeleteSuccessOpen: PropTypes.func,
   setDeleteErrorOpen: PropTypes.func,
+  page: PropTypes.number,
+  members: PropTypes.instanceOf([Member]),
+  rowsPerPage: PropTypes.number,
+  handleChangePage: PropTypes.func,
+  handleChangeRowsPerPage: PropTypes.func,
 };

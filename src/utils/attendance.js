@@ -1,5 +1,4 @@
-import axios from 'axios';
-
+import instance from './api';
 import Member from './member';
 
 class Attendance {
@@ -15,12 +14,21 @@ class Attendance {
   }
 
   delete({ session, userId }) {
-    return axios.delete('http://localhost:8000/api/v1/attendance/', {
+    return instance.delete('/api/v1/attendance/', {
       data: {
         userId: userId.replace('_', ''),
         token: session,
         id: this.id,
       },
+    });
+  }
+
+  edit(type, { session, userId }) {
+    return instance.put('/api/v1/attendance/', {
+      userId: userId.replace('_', ''),
+      token: session,
+      id: this.id,
+      type,
     });
   }
 }

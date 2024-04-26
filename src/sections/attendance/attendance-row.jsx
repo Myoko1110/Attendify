@@ -7,7 +7,14 @@ import Attendances from 'src/utils/attendances';
 
 import AttendanceDetail from './attendance-detail';
 
-export default function AttendanceRow({ date, attendances, updateAttendances }) {
+export default function AttendanceRow({
+  date,
+  attendances,
+  setDeleteSuccessOpen,
+  setDeleteErrorOpen,
+  setEditSuccessOpen,
+  setEditErrorOpen,
+}) {
   const { rate } = attendances;
   const [isOpen, setIsOpen] = useState(false);
 
@@ -50,7 +57,10 @@ export default function AttendanceRow({ date, attendances, updateAttendances }) 
         isOpen={isOpen}
         setIsOpen={setIsOpen}
         attendances={attendances}
-        updateAttendances={updateAttendances}
+        setDeleteSuccessOpen={setDeleteSuccessOpen}
+        setDeleteErrorOpen={setDeleteErrorOpen}
+        setEditSuccessOpen={setEditSuccessOpen}
+        setEditErrorOpen={setEditErrorOpen}
       />
     </>
   );
@@ -59,5 +69,9 @@ export default function AttendanceRow({ date, attendances, updateAttendances }) 
 AttendanceRow.propTypes = {
   date: PropTypes.number,
   attendances: PropTypes.instanceOf(Attendances),
-  updateAttendances: PropTypes.func,
+  setAttendances: PropTypes.func,
+  setDeleteSuccessOpen: PropTypes.func,
+  setDeleteErrorOpen: PropTypes.func,
+  setEditSuccessOpen: PropTypes.func,
+  setEditErrorOpen: PropTypes.func,
 };

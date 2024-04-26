@@ -15,6 +15,7 @@ import Attendances from 'src/utils/attendances';
 
 import Iconify from 'src/components/iconify';
 
+import Snackbars from '../snackbers';
 import AttendanceDates from '../attendance-dates';
 
 // ----------------------------------------------------------------------
@@ -22,16 +23,21 @@ import AttendanceDates from '../attendance-dates';
 export default function AttendanceView() {
   const theme = useTheme();
   const [cookies] = useCookies();
-  const [attendances, setAttendances] = useState(new Attendances());
+  const [attendances, setAttendances] = useState({});
   const lgUp = useResponsive('up', 'lg');
+
+  const [deleteSuccessOpen, setDeleteSuccessOpen] = useState(false);
+  const [deleteErrorOpen, setDeleteErrorOpen] = useState(false);
+  const [editSuccessOpen, setEditSuccessOpen] = useState(false);
+  const [editErrorOpen, setEditErrorOpen] = useState(false);
 
   useEffect(() => {
     updateAttendances();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const updateAttendances = () => {
-    Attendances.all(cookies).then((res) => {
+  const updateAttendances = async () => {
+    await Attendances.all(cookies).then((res) => {
       setAttendances(res.toMonthList());
     });
   };
@@ -111,7 +117,10 @@ export default function AttendanceView() {
                   <AccordionDetails sx={{ px: 4 }}>
                     <AttendanceDates
                       attendances={attendances[row]}
-                      updateAttendances={updateAttendances}
+                      setDeleteSuccessOpen={setDeleteSuccessOpen}
+                      setDeleteErrorOpen={setDeleteErrorOpen}
+                      setEditSuccessOpen={setEditSuccessOpen}
+                      setEditErrorOpen={setEditErrorOpen}
                     />
                   </AccordionDetails>
                 </Accordion>
@@ -120,6 +129,16 @@ export default function AttendanceView() {
           </>
         )}
       </Card>
+      <Snackbars
+        deleteSuccessOpen={deleteSuccessOpen}
+        deleteErrorOpen={deleteErrorOpen}
+        editSuccessOpen={editSuccessOpen}
+        editErrorOpen={editErrorOpen}
+        setDeleteSuccessOpen={setDeleteSuccessOpen}
+        setDeleteErrorOpen={setDeleteErrorOpen}
+        setEditSuccessOpen={setEditSuccessOpen}
+        setEditErrorOpen={setEditErrorOpen}
+      />
     </Container>
   );
 }

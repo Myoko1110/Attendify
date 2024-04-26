@@ -56,9 +56,10 @@ export default function UserTableRow({
     setOpen(null);
   };
 
-  useState(() => {
-    Attendances.byMember(member.id, cookies).then((r) => {
+  useState(async () => {
+    await Attendances.byMember(member.id, cookies).then((r) => {
       setRate(r.rate);
+      member.rate = r.rate;
     });
   });
 
@@ -81,9 +82,9 @@ export default function UserTableRow({
 
         <TableCell align="center">
           <Grid container alignItems="center" justify="spaceBetween">
-            <Grid item xs={6}>
-              {rate ? (
-                <>
+            {rate ? (
+              <>
+                <Grid item xs={6}>
                   {rate >= 80 ? (
                     <LinearProgress
                       variant="determinate"
@@ -111,14 +112,14 @@ export default function UserTableRow({
                       }}
                     />
                   )}
-                </>
-              ) : (
-                <Typography variant="body2">データなし</Typography>
-              )}
-            </Grid>
-            <Grid item xs={6}>
-              <Typography variant="body2">{rate && <>{rate.toFixed(2)}%</>}</Typography>
-            </Grid>
+                </Grid>
+                <Grid item xs={6}>
+                  <Typography variant="body2">{rate && <>{rate.toFixed(2)}%</>}</Typography>
+                </Grid>
+              </>
+            ) : (
+              <Typography variant="body2">データなし</Typography>
+            )}
           </Grid>
         </TableCell>
 

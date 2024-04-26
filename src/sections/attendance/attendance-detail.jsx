@@ -1,6 +1,10 @@
 import PropTypes from 'prop-types';
+import { useCookies } from 'react-cookie';
+import { useState, useEffect } from 'react';
 
 import {
+  Box,
+  Card,
   Table,
   Dialog,
   Button,
@@ -12,13 +16,62 @@ import {
   DialogContent,
   DialogActions,
   TableContainer,
+  TableSortLabel,
 } from '@mui/material';
 
 import Attendances from 'src/utils/attendances';
 
+import { applyFilter } from '../parts/utils';
 import AttendanceTableRow from './attendance-table-row';
+import { visuallyHidden, getMemberComparator } from '../user/utils';
 
-export default function AttendanceDetail({ isOpen, setIsOpen, attendances, updateAttendances }) {
+export default function AttendanceDetail({
+  isOpen,
+  setIsOpen,
+  attendances,
+  setDeleteSuccessOpen,
+  setDeleteErrorOpen,
+  setEditSuccessOpen,
+  setEditErrorOpen,
+}) {
+  const [orderBy, setOrderBy] = useState('part');
+  const [order, setOrder] = useState('asc');
+
+  const [cookies] = useCookies('');
+
+  const onSort = (property) => (event) => {
+    handleSort(event, property);
+  };
+
+  const handleSort = (event, id) => {
+    const isAsc = orderBy === id && order === 'asc';
+    if (id !== '') {
+      setOrder(isAsc ? 'desc' : 'asc');
+      setOrderBy(id);
+    }
+  };
+
+  const dataFiltered = applyFilter({
+    inputData: attendances,
+    comparator: getMemberComparator(order, orderBy),
+  });
+
+  useEffect(() => {
+    attendances.forEach((i) => {
+      i.getUser(cookies).then((res) => {
+        if (!res) {
+          i.name = '不明';
+        } else {
+          i.lastName = res.lastName;
+          i.firstName = res.firstName;
+          i.part = res.part;
+          i.grade = res.grade;
+        }
+      });
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [attendances]);
+
   return (
     <Dialog
       open={isOpen}
@@ -32,30 +85,72 @@ export default function AttendanceDetail({ isOpen, setIsOpen, attendances, updat
       }}
     >
       <DialogTitle sx={{ padding: '24px' }}>
-        {attendances[0].date.getMonth() + 1}月{attendances[0].date.getDate()}日の出欠
+        {attendances[0] && (
+          <>
+            {attendances[0].date.getMonth() + 1}月{attendances[0].date.getDate()}日の出欠
+          </>
+        )}
       </DialogTitle>
       <DialogContent sx={{ overflow: 'auto' }}>
-        <TableContainer>
-          <Table>
-            <TableHead>
-              <TableRow>
-                <TableCell>パ</TableCell>
-                <TableCell>名前</TableCell>
-                <TableCell sx={{ textAlign: 'center' }}>出欠</TableCell>
-                <TableCell />
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {attendances.map((row, index) => (
-                <AttendanceTableRow
-                  attendance={row}
-                  key={index}
-                  updateAttendances={updateAttendances}
-                />
-              ))}
-            </TableBody>
-          </Table>
-        </TableContainer>
+        <Card>
+          <TableContainer>
+            <Table>
+              <TableHead>
+                <TableRow>
+                  <TableCell>
+                    <TableSortLabel
+                      hideSortIcon
+                      active={orderBy === 'part'}
+                      direction={orderBy === 'part' ? order : 'asc'}
+                      onClick={onSort('part')}
+                    >
+                      パート
+                      {orderBy === 'part' ? (
+                        <Box sx={{ ...visuallyHidden }}>
+                          {order === 'desc' ? 'sorted descending' : 'sorted ascending'}
+                        </Box>
+                      ) : null}
+                    </TableSortLabel>
+                  </TableCell>
+                  <TableCell>
+                    <TableSortLabel
+                      hideSortIcon
+                      active={orderBy === 'name'}
+                      direction={orderBy === 'name' ? order : 'asc'}
+                      onClick={onSort('name')}
+                    >
+                      名前
+                      {orderBy === 'name' ? (
+                        <Box sx={{ ...visuallyHidden }}>
+                          {order === 'desc' ? 'sorted descending' : 'sorted ascending'}
+                        </Box>
+                      ) : null}
+                    </TableSortLabel>
+                  </TableCell>
+                  <TableCell sx={{ textAlign: 'center' }}>出欠</TableCell>
+                  <TableCell />
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {dataFiltered.map((row, index) => (
+                  <>
+                    {row.id !== -1 && (
+                      <AttendanceTableRow
+                        attendance={row}
+                        key={index}
+                        handleSort={handleSort}
+                        setDeleteSuccessOpen={setDeleteSuccessOpen}
+                        setDeleteErrorOpen={setDeleteErrorOpen}
+                        setEditSuccessOpen={setEditSuccessOpen}
+                        setEditErrorOpen={setEditErrorOpen}
+                      />
+                    )}
+                  </>
+                ))}
+              </TableBody>
+            </Table>
+          </TableContainer>
+        </Card>
       </DialogContent>
       <DialogActions sx={{ p: '24px' }}>
         <Button variant="outlined" color="inherit" onClick={() => setIsOpen(false)}>
@@ -70,5 +165,8 @@ AttendanceDetail.propTypes = {
   isOpen: PropTypes.bool,
   setIsOpen: PropTypes.func,
   attendances: PropTypes.instanceOf(Attendances),
-  updateAttendances: PropTypes.func,
+  setDeleteSuccessOpen: PropTypes.func,
+  setDeleteErrorOpen: PropTypes.func,
+  setEditSuccessOpen: PropTypes.func,
+  setEditErrorOpen: PropTypes.func,
 };

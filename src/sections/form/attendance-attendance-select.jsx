@@ -15,6 +15,8 @@ export default function AttendanceMemberSelect({ id, lastName, firstName, setAtt
     if (e.target.value === 'その他') {
       setIsOther(true);
     } else {
+      setIsOther(false);
+      setOtherValue('');
       setAttendance(e.target.value);
     }
   };

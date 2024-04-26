@@ -10,7 +10,6 @@ import TableBody from '@mui/material/TableBody';
 import { Alert, Snackbar } from '@mui/material';
 import Typography from '@mui/material/Typography';
 import TableContainer from '@mui/material/TableContainer';
-import TablePagination from '@mui/material/TablePagination';
 
 import Iconify from 'src/components/iconify';
 import Scrollbar from 'src/components/scrollbar';
@@ -23,7 +22,7 @@ import UserTableHead from '../user-table-head';
 import UserAddDialog from '../user-add-dialog';
 import TableEmptyRows from '../table-empty-rows';
 import UserTableToolbar from '../user-table-toolbar';
-import { emptyRows, applyFilter, getComparator } from '../utils';
+import { emptyRows, applyFilter, getMemberComparator } from '../utils';
 
 // ----------------------------------------------------------------------
 
@@ -33,7 +32,7 @@ export default function MembersPage() {
   const [page, setPage] = useState(0);
   const [order, setOrder] = useState('asc');
   const [selected, setSelected] = useState([]);
-  const [orderBy, setOrderBy] = useState('name');
+  const [orderBy, setOrderBy] = useState('part');
   const [filterName, setFilterName] = useState('');
   const [rowsPerPage, setRowsPerPage] = useState(20);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -46,9 +45,11 @@ export default function MembersPage() {
 
   const [isConnectionError, setIsConnectionError] = useState(false);
 
-  useEffect(() => updateUsers()
+  useEffect(
+    () => updateUsers(),
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    , []);
+    []
+  );
 
   const updateUsers = () => {
     Member.all(cookies)
@@ -87,7 +88,7 @@ export default function MembersPage() {
     } else if (selectedIndex > 0) {
       newSelected = newSelected.concat(
         selected.slice(0, selectedIndex),
-        selected.slice(selectedIndex + 1),
+        selected.slice(selectedIndex + 1)
       );
     }
     setSelected(newSelected);
@@ -113,7 +114,7 @@ export default function MembersPage() {
 
   const dataFiltered = applyFilter({
     inputData: members,
-    comparator: getComparator(order, orderBy),
+    comparator: getMemberComparator(order, orderBy),
     filterName,
   });
 
@@ -147,8 +148,12 @@ export default function MembersPage() {
           updateUsers={updateUsers}
           setDeleteSuccessOpen={setDeleteSuccessOpen}
           setDeleteErrorOpen={setDeleteErrorOpen}
+          page={page}
+          members={members}
+          rowsPerPage={rowsPerPage}
+          handleChangePage={handleChangePage}
+          handleChangeRowsPerPage={handleChangeRowsPerPage}
         />
-
         <Scrollbar>
           <TableContainer sx={{ overflow: 'unset' }}>
             <Table sx={{ minWidth: 800 }}>
@@ -194,17 +199,6 @@ export default function MembersPage() {
             </Table>
           </TableContainer>
         </Scrollbar>
-
-        <TablePagination
-          page={page}
-          component="div"
-          count={members.length}
-          rowsPerPage={rowsPerPage}
-          onPageChange={handleChangePage}
-          rowsPerPageOptions={[20, 50, 100]}
-          onRowsPerPageChange={handleChangeRowsPerPage}
-          labelRowsPerPage="1ページあたりの表示数"
-        />
       </Card>
       <Snackbars
         deleteSuccessOpen={deleteSuccessOpen}

@@ -1,7 +1,6 @@
+import { useState } from 'react';
 import PropTypes from 'prop-types';
-import { useCookies } from 'react-cookie';
 import { useTheme } from '@emotion/react';
-import { useState, useEffect } from 'react';
 
 import { Box, Popover, TableRow, MenuItem, TableCell, Typography, IconButton } from '@mui/material';
 
@@ -9,29 +8,22 @@ import Attendance from 'src/utils/attendance';
 
 import Iconify from 'src/components/iconify';
 
+import AttendanceEditDialog from './attendance-edit-dialog';
 import AttendanceDeleteDialog from './attendance-delete-dialog';
 
-export default function AttendanceTableRow({ attendance, updateAttendances }) {
-  const [name, setName] = useState('');
-  const [part, setPart] = useState('');
+export default function AttendanceTableRow({
+  attendance,
+  setDeleteSuccessOpen,
+  setDeleteErrorOpen,
+  setEditSuccessOpen,
+  setEditErrorOpen,
+}) {
   const [open, setOpen] = useState('');
 
   const [deleteOpen, setDeleteOpen] = useState(false);
-
-  const [cookies] = useCookies(['']);
+  const [editOpen, setEditOpen] = useState(false);
 
   const theme = useTheme();
-
-  useEffect(() => {
-    attendance.getUser(cookies).then((res) => {
-      if (!res) {
-        setName('不明');
-      } else {
-        setName(`${res.lastName} ${res.firstName}`);
-        setPart(res.part);
-      }
-    });
-  });
 
   const renderAttendance = (type) => {
     switch (type) {
@@ -105,14 +97,14 @@ export default function AttendanceTableRow({ attendance, updateAttendances }) {
   return (
     <>
       <TableRow>
-        <TableCell sx={{ p: '8px' }}>{part}</TableCell>
-        <TableCell sx={{ p: '8px', minWidth: 150 }}>
-          <Typography variant="subtitle1">{name}</Typography>
+        <TableCell>{attendance.part}</TableCell>
+        <TableCell sx={{ minWidth: 120 }}>
+          <Typography variant="subtitle1">
+            {attendance.lastName} {attendance.firstName}
+          </Typography>
         </TableCell>
 
-        <TableCell sx={{ p: '8px' }} width={116}>
-          {renderAttendance(attendance.type)}
-        </TableCell>
+        <TableCell width={116}>{renderAttendance(attendance.type)}</TableCell>
 
         <TableCell align="right">
           <IconButton onClick={handleOpenMenu}>
@@ -132,7 +124,12 @@ export default function AttendanceTableRow({ attendance, updateAttendances }) {
             },
           }}
         >
-          <MenuItem>
+          <MenuItem
+            onClick={() => {
+              setEditOpen(true);
+              setOpen(false);
+            }}
+          >
             <Iconify icon="eva:edit-fill" sx={{ mr: 2 }} />
             編集
           </MenuItem>
@@ -153,7 +150,15 @@ export default function AttendanceTableRow({ attendance, updateAttendances }) {
         isOpen={deleteOpen}
         setIsOpen={setDeleteOpen}
         attendance={attendance}
-        updateAttendances={updateAttendances}
+        setDeleteSuccessOpen={setDeleteSuccessOpen}
+        setDeleteErrorOpen={setDeleteErrorOpen}
+      />
+      <AttendanceEditDialog
+        isOpen={editOpen}
+        setIsOpen={setEditOpen}
+        attendance={attendance}
+        setEditSuccessOpen={setEditSuccessOpen}
+        setEditErrorOpen={setEditErrorOpen}
       />
     </>
   );
@@ -161,5 +166,8 @@ export default function AttendanceTableRow({ attendance, updateAttendances }) {
 
 AttendanceTableRow.propTypes = {
   attendance: PropTypes.instanceOf(Attendance),
-  updateAttendances: PropTypes.func,
+  setDeleteSuccessOpen: PropTypes.func,
+  setDeleteErrorOpen: PropTypes.func,
+  setEditSuccessOpen: PropTypes.func,
+  setEditErrorOpen: PropTypes.func,
 };

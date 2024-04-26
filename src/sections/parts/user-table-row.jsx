@@ -12,19 +12,14 @@ import Attendances from 'src/utils/attendances';
 
 // ----------------------------------------------------------------------
 
-export default function UserTableRow({
-                                       selected,
-                                       name,
-                                       headcount,
-                                     }) {
-  const [cookies,] = useCookies(['']);
+export default function UserTableRow({ selected, name, headcount }) {
+  const [cookies] = useCookies(['']);
   const [rate, setRate] = useState(null);
 
-  useState(() => {
-    Attendances.byPart(name, cookies)
-      .then(res => {
-        setRate(res.rate);
-      });
+  useState(async () => {
+    await Attendances.byPart(name, cookies).then((res) => {
+      setRate(res.rate);
+    });
   });
 
   return (
@@ -45,45 +40,42 @@ export default function UserTableRow({
             <Grid item xs={6}>
               {rate ? (
                 <>
-                  {
-                    rate >= 80
-                      ? <LinearProgress
-                        variant="determinate"
-                        value={rate}
-                        sx={{
-                          height: '10px',
-                          backgroundColor: 'success.lighter',
-                          borderRadius: '100px',
-                          '& .MuiLinearProgress-bar': {
-                            backgroundColor: 'success.main',
-                          },
-
-                        }} />
-                      : <LinearProgress
-                        variant="determinate"
-                        value={rate}
-                        sx={{
-                          height: '10px',
-                          backgroundColor: 'warning.lighter',
-                          borderRadius: '100px',
-                          '& .MuiLinearProgress-bar': {
-                            backgroundColor: 'warning.main',
-                          },
-                        }} />
-                  }</>
+                  {rate >= 80 ? (
+                    <LinearProgress
+                      variant="determinate"
+                      value={rate}
+                      sx={{
+                        height: '10px',
+                        backgroundColor: 'success.lighter',
+                        borderRadius: '100px',
+                        '& .MuiLinearProgress-bar': {
+                          backgroundColor: 'success.main',
+                        },
+                      }}
+                    />
+                  ) : (
+                    <LinearProgress
+                      variant="determinate"
+                      value={rate}
+                      sx={{
+                        height: '10px',
+                        backgroundColor: 'warning.lighter',
+                        borderRadius: '100px',
+                        '& .MuiLinearProgress-bar': {
+                          backgroundColor: 'warning.main',
+                        },
+                      }}
+                    />
+                  )}
+                </>
               ) : (
                 <Typography variant="body2">データなし</Typography>
               )}
-
-
             </Grid>
             <Grid item xs={6}>
-              <Typography variant="body2">{rate && (
-                <>{rate.toFixed(2)}%</>
-              )}</Typography>
+              <Typography variant="body2">{rate && <>{rate.toFixed(2)}%</>}</Typography>
             </Grid>
           </Grid>
-
         </TableCell>
 
         {/*

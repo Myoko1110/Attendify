@@ -9,19 +9,36 @@ export default function AttendanceDeleteDialog({
   isOpen,
   setIsOpen,
   attendance,
-  updateAttendances,
+  setDeleteSuccessOpen,
+  setDeleteErrorOpen,
 }) {
   const [cookies] = useCookies(['']);
 
-  const handleClick = () => {
-    attendance.delete(cookies).then(() => {
-      setIsOpen(false);
-      updateAttendances();
-    });
+  const handleClick = async () => {
+    await attendance
+      .delete(cookies)
+      .then(() => {
+        attendance.id = -1;
+        setIsOpen(false);
+        setDeleteSuccessOpen(true);
+      })
+      .catch((e) => {
+        console.log(e);
+        setIsOpen(false);
+        setDeleteErrorOpen(true);
+      });
   };
 
   return (
-    <Dialog open={isOpen} onClose={() => setIsOpen(false)}>
+    <Dialog
+      open={isOpen}
+      onClose={() => setIsOpen(false)}
+      sx={{
+        '& .MuiPaper-root': {
+          borderRadius: '16px',
+        },
+      }}
+    >
       <DialogTitle>この出欠情報を本当に削除しますか？</DialogTitle>
       <DialogActions sx={{ p: '24px' }}>
         <Button onClick={() => setIsOpen(false)} variant="outlined" color="inherit">
@@ -39,5 +56,6 @@ AttendanceDeleteDialog.propTypes = {
   isOpen: PropTypes.bool,
   setIsOpen: PropTypes.func,
   attendance: PropTypes.instanceOf(Attendance),
-  updateAttendances: PropTypes.func,
+  setDeleteSuccessOpen: PropTypes.func,
+  setDeleteErrorOpen: PropTypes.func,
 };

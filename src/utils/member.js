@@ -1,6 +1,5 @@
-import axios from 'axios';
-
 import Grades from './grade';
+import instance from './api';
 
 export default class Member {
   constructor(id, lastName, firstName, part, grade) {
@@ -12,8 +11,8 @@ export default class Member {
   }
 
   static all({ userId, session }) {
-    return axios
-      .get('http://localhost:8000/api/v1/member/', {
+    return instance
+      .get('/api/v1/member/', {
         params: {
           userId: userId.replace('_', ''),
           token: session,
@@ -23,13 +22,12 @@ export default class Member {
         res.data.members.map(
           (i) => new Member(i.id, i.lastName, i.firstName, i.part, Grades[i.grade])
         )
-      )
-      .catch((err) => err);
+      );
   }
 
   static byPart(part, { userId, session }) {
-    return axios
-      .get('http://localhost:8000/api/v1/member/', {
+    return instance
+      .get('/api/v1/member/', {
         params: {
           userId: userId.replace('_', ''),
           token: session,
@@ -40,13 +38,12 @@ export default class Member {
         res.data.members.map(
           (i) => new Member(i.id, i.lastName, i.firstName, i.part, Grades[i.grade])
         )
-      )
-      .catch((err) => err);
+      );
   }
 
   static byGrade(grade, { userId, session }) {
-    return axios
-      .get('http://localhost:8000/api/v1/member/', {
+    return instance
+      .get('/api/v1/member/', {
         params: {
           userId: userId.replace('_', ''),
           token: session,
@@ -57,13 +54,12 @@ export default class Member {
         res.data.members.map(
           (i) => new Member(i.id, i.lastName, i.firstName, i.part, Grades[i.grade])
         )
-      )
-      .catch((err) => err);
+      );
   }
 
   static byPartAndGrade(part, grade, { userId, session }) {
-    return axios
-      .get('http://localhost:8000/api/v1/member/', {
+    return instance
+      .get('/api/v1/member/', {
         params: {
           userId: userId.replace('_', ''),
           token: session,
@@ -75,13 +71,12 @@ export default class Member {
         res.data.members.map(
           (i) => new Member(i.id, i.lastName, i.firstName, i.part, Grades[i.grade])
         )
-      )
-      .catch((err) => err);
+      );
   }
 
   static byId(id, { userId, session }) {
-    return axios
-      .get('http://localhost:8000/api/v1/member/', {
+    return instance
+      .get('/api/v1/member/', {
         params: {
           userId: userId.replace('_', ''),
           token: session,
@@ -97,7 +92,6 @@ export default class Member {
             res.data.member.part,
             Grades[res.data.member.grade]
           )
-      )
-      .catch(() => null);
+      );
   }
 }

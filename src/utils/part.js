@@ -11,11 +11,6 @@ class Part {
   members({ session, userId }) {
     return Member.byPart({ session, userId }, this.en);
   }
-
-  rate({ session, userId }) {
-    console.log(this.en);
-    return 100;
-  }
 }
 
 const Parts = [

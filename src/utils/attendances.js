@@ -1,6 +1,6 @@
-import axios from 'axios';
 import Decimal from 'decimal.js';
 
+import instance from './api';
 import Attendance from './attendance';
 
 class Attendances extends Array {
@@ -14,7 +14,8 @@ class Attendances extends Array {
 
     let total = 0;
     this.forEach((i) => {
-      if (i.type === '出席') total += 100;
+      if (i.id === -1) count -= 1;
+      else if (i.type === '出席') total += 100;
       else if (i.type === '欠席') {
         /* empty */
       } else if (i.type === '遅刻' || i.type === '早退') total += 50;
@@ -127,8 +128,8 @@ class Attendances extends Array {
    * @returns {Promise<Attendances>}
    */
   static byMember(id, { userId, session }) {
-    return axios
-      .get(`http://localhost:8000/api/v1/attendance/member/${id}`, {
+    return instance
+      .get(`/api/v1/attendance/member/${id}`, {
         params: {
           userId: userId.replace('_', ''),
           token: session,
@@ -152,8 +153,8 @@ class Attendances extends Array {
    * @returns {Promise<Attendances>}
    */
   static byPart(part, { userId, session }) {
-    return axios
-      .get(`http://localhost:8000/api/v1/attendance/part/${part}`, {
+    return instance
+      .get(`/api/v1/attendance/part/${part}/`, {
         params: {
           userId: userId.replace('_', ''),
           token: session,
@@ -176,8 +177,8 @@ class Attendances extends Array {
    * @returns {Promise<Attendances>}
    */
   static all({ userId, session }) {
-    return axios
-      .get(`http://localhost:8000/api/v1/attendance/`, {
+    return instance
+      .get(`/api/v1/attendance/`, {
         params: {
           userId: userId.replace('_', ''),
           token: session,
@@ -190,8 +191,7 @@ class Attendances extends Array {
               (i) => new Attendance(i.id, i.userId, new Date(i.date * 1000), i.type)
             )
           )
-      )
-      .catch((err) => err);
+      );
   }
 }
 
