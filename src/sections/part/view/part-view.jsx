@@ -54,13 +54,10 @@ export default function PartView() {
             });
           });
 
-          console.log(dr);
-
           setRateDates(dr);
           setRates(ar);
         })
         .catch((e) => {
-          console.log(e);
           setTitle('ユーザーが見つかりませんでした');
         });
     }

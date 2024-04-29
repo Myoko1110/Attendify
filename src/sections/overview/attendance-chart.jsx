@@ -19,6 +19,41 @@ export default function AttendanceChart({ title, subheader, chart, ...other }) {
         columnWidth: '70%',
       },
     },
+
+    chart: {
+      toolbar: {
+        show: true,
+        export: {
+          csv: {
+            filename: 'all',
+            columnDelimiter: ',',
+            headerCategory: '日にち',
+            headerValue: '出席率',
+            dateFormatter(timestamp) {
+              return new Date(timestamp).toDateString();
+            },
+          },
+          svg: {
+            filename: 'all',
+          },
+          png: {
+            filename: 'all',
+          },
+        },
+      },
+      locales: [
+        {
+          name: 'en',
+          options: {
+            toolbar: {
+              exportToSVG: 'SVGダウンロード',
+              exportToPNG: 'PNGダウンロード',
+              exportToCSV: 'CSVダウンロード',
+            },
+          },
+        },
+      ],
+    },
     labels,
     xaxis: {
       type: 'datetime',
@@ -43,6 +78,10 @@ export default function AttendanceChart({ title, subheader, chart, ...other }) {
     },
     markers: {
       size: 5,
+    },
+    legend: {
+      position: 'top',
+      horizontalAlign: 'left',
     },
     ...options,
   });

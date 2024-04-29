@@ -51,7 +51,6 @@ export default function MemberView() {
             Object.keys(months).forEach((y) => {
               Object.keys(months[y]).forEach((m) => {
                 const adc = months[y][m];
-                console.log(y, m);
                 dr.push(`${y}-${m}-2`);
                 ar.push(adc.rate);
               });
@@ -61,8 +60,7 @@ export default function MemberView() {
             setRates(ar);
           });
         })
-        .catch((e) => {
-          console.log(e);
+        .catch(() => {
           setTitle('ユーザーが見つかりませんでした');
         });
     }

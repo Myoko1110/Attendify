@@ -23,7 +23,6 @@ export default function AttendanceDeleteDialog({
         setDeleteSuccessOpen(true);
       })
       .catch((e) => {
-        console.log(e);
         setIsOpen(false);
         setDeleteErrorOpen(true);
       });

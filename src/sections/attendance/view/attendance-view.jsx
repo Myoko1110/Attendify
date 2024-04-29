@@ -39,7 +39,6 @@ export default function AttendanceView() {
   const updateAttendances = async () => {
     await Attendances.all(cookies).then((res) => {
       setAttendances(res.toObject());
-      console.log(res.toObject());
     });
   };
 

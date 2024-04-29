@@ -75,19 +75,19 @@ export default function AttendanceRateChart({ title, subheader, chart, ...other 
             filename: 'all',
           },
         },
-        locales: [
-          {
-            name: 'en',
-            options: {
-              toolbar: {
-                exportToSVG: 'SVGダウンロード',
-                exportToPNG: 'PNGダウンロード',
-                exportToCSV: 'CSVダウンロード',
-              },
+      },
+      locales: [
+        {
+          name: 'en',
+          options: {
+            toolbar: {
+              exportToSVG: 'SVGダウンロード',
+              exportToPNG: 'PNGダウンロード',
+              exportToCSV: 'CSVダウンロード',
             },
           },
-        ],
-      },
+        },
+      ],
     },
     markers: {
       size: 5,
