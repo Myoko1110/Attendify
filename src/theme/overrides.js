@@ -153,5 +153,17 @@ export function overrides(theme) {
           `${from}-${to} / ${count !== -1 ? count : `${to}以上`}`,
       },
     },
+    MuiAccordion: {
+      styleOverrides: {
+        root: {
+          '&.Mui-expanded': {
+            margin: 0,
+          },
+          '&.Mui-expanded::before': {
+            opacity: 1,
+          },
+        },
+      },
+    },
   };
 }

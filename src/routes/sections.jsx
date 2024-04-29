@@ -6,8 +6,11 @@ import DashboardLayout from 'src/layouts/dashboard';
 export const IndexPage = lazy(() => import('src/pages/home'));
 export const AttendancePage = lazy(() => import('src/pages/attendance'));
 export const MembersPage = lazy(() => import('src/pages/members'));
+export const MemberPage = lazy(() => import('src/pages/member'));
 export const SchedulePage = lazy(() => import('src/pages/schedule'));
 export const PartsPage = lazy(() => import('src/pages/parts'));
+export const PartPage = lazy(() => import('src/pages/part'));
+export const GradePage = lazy(() => import('src/pages/grade'));
 
 export const FormPage = lazy(() => import('src/pages/form'));
 
@@ -31,17 +34,23 @@ function Router() {
         { element: <IndexPage />, index: true },
         { path: 'attendance', element: <AttendancePage /> },
         { path: 'members', element: <MembersPage /> },
+        { path: 'members/:id', element: <MemberPage /> },
         { path: 'parts', element: <PartsPage /> },
+        { path: 'parts/:partName', element: <PartPage /> },
         { path: 'schedule', element: <SchedulePage /> },
+        { path: 'grade/:g', element: <GradePage /> },
       ],
+      errorElement: <Page500 />,
     },
     {
       path: 'login',
       element: <LoginPage />,
+      errorElement: <Page500 />,
     },
     {
       path: 'form',
       element: <FormPage />,
+      errorElement: <Page500 />,
     },
     {
       path: '500',

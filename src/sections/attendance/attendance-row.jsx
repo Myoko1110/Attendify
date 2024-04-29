@@ -15,7 +15,7 @@ export default function AttendanceRow({
   setEditSuccessOpen,
   setEditErrorOpen,
 }) {
-  const { rate } = attendances;
+  const { rate, actualRate } = attendances;
   const [isOpen, setIsOpen] = useState(false);
 
   const day = attendances[0].date.getDay();
@@ -47,7 +47,14 @@ export default function AttendanceRow({
         >
           <Typography variant="body1">{date}日</Typography>
           {rate !== null ? (
-            <Typography variant="body2">{rate.toFixed(2)}%</Typography>
+            <Stack direction="row" gap={1}>
+              <Typography variant="subtitle2" width={70} textAlign="right">
+                {rate.toFixed(2)}%
+              </Typography>
+              <Typography variant="body2" width={60}>
+                ({actualRate.toFixed(2)}%)
+              </Typography>
+            </Stack>
           ) : (
             <Typography variant="body2">データなし</Typography>
           )}

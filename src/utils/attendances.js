@@ -28,6 +28,38 @@ class Attendances extends Array {
     return new Decimal(total).div(new Decimal(count)).mul(100).round().div(100).toNumber();
   }
 
+  get actualRate() {
+    let count = this.length;
+    if (count === 0) return null;
+
+    let total = 0;
+    this.forEach((i) => {
+      if (i.id === -1) count -= 1;
+      else if (i.type === '出席') total += 100;
+      else if (i.type === '遅刻' || i.type === '早退') total += 50;
+    });
+
+    if (count === 0) return 0;
+
+    return new Decimal(total).div(new Decimal(count)).mul(100).round().div(100).toNumber();
+  }
+
+  toObject() {
+    const years = {};
+    this.forEach((i) => {
+      if (!(i.date.getFullYear() in years)) {
+        years[i.date.getFullYear()] = {};
+      }
+
+      if (!(i.date.getMonth() + 1 in years[i.date.getFullYear()])) {
+        years[i.date.getFullYear()][i.date.getMonth() + 1] = new Attendances();
+      }
+
+      years[i.date.getFullYear()][i.date.getMonth() + 1].push(i);
+    });
+    return years;
+  }
+
   toMonthList() {
     const dateList = {};
     this.forEach((i) => {
@@ -155,6 +187,31 @@ class Attendances extends Array {
   static byPart(part, { userId, session }) {
     return instance
       .get(`/api/v1/attendance/part/${part}/`, {
+        params: {
+          userId: userId.replace('_', ''),
+          token: session,
+        },
+      })
+      .then(
+        (res) =>
+          new Attendances(
+            ...res.data.attendances.map(
+              (i) => new Attendance(i.id, i.userId, new Date(i.date * 1000), i.type)
+            )
+          )
+      );
+  }
+
+  /**
+   * 学年から出欠情報を取得します
+   * @param grade - 学年
+   * @param userId - 取得に使用するuserId
+   * @param session - 取得に使用するsessionToken
+   * @returns {Promise<Attendances>}
+   */
+  static byGrade(grade, { userId, session }) {
+    return instance
+      .get(`/api/v1/attendance/grade/${grade}/`, {
         params: {
           userId: userId.replace('_', ''),
           token: session,

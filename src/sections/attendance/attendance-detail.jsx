@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types';
 import { useCookies } from 'react-cookie';
-import { useState, useEffect } from 'react';
+import { useState, Fragment, useEffect } from 'react';
 
 import {
   Box,
@@ -133,7 +133,7 @@ export default function AttendanceDetail({
               </TableHead>
               <TableBody>
                 {dataFiltered.map((row, index) => (
-                  <>
+                  <Fragment key={index}>
                     {row.id !== -1 && (
                       <AttendanceTableRow
                         attendance={row}
@@ -145,7 +145,7 @@ export default function AttendanceDetail({
                         setEditErrorOpen={setEditErrorOpen}
                       />
                     )}
-                  </>
+                  </Fragment>
                 ))}
               </TableBody>
             </Table>

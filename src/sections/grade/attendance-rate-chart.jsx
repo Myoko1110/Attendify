@@ -1,25 +1,23 @@
 import PropTypes from 'prop-types';
 
-import Box from '@mui/material/Box';
-import Card from '@mui/material/Card';
-import CardHeader from '@mui/material/CardHeader';
-
 import Chart, { useChart } from 'src/components/chart';
 
 // ----------------------------------------------------------------------
 
-export default function AttendanceRateChart({ title, subheader, chart, ...other }) {
+export default function AttendanceRateChart({ chart, gradeName }) {
   const { labels, colors, series, options } = chart;
 
   const chartOptions = useChart({
     colors,
-    plotOptions: {
-      bar: {
-        columnWidth: '16%',
-      },
-    },
     fill: {
-      type: series.map((i) => i.fill),
+      opacity: 1,
+      gradient: {
+        type: 'vertical',
+        shadeIntensity: 0,
+        opacityFrom: 0.4,
+        opacityTo: 0,
+        stops: [0, 100],
+      },
     },
     labels,
     xaxis: {
@@ -27,6 +25,7 @@ export default function AttendanceRateChart({ title, subheader, chart, ...other 
       labels: {
         format: 'MM/dd',
       },
+      range: 5184000000,
     },
     yaxis: {
       max: 100,
@@ -34,10 +33,6 @@ export default function AttendanceRateChart({ title, subheader, chart, ...other 
     },
     stroke: {
       curve: 'straight',
-    },
-    legend: {
-      position: 'right',
-      offsetY: 40,
     },
     tooltip: {
       shared: true,
@@ -55,12 +50,12 @@ export default function AttendanceRateChart({ title, subheader, chart, ...other 
       },
     },
     chart: {
-      stacked: true,
       toolbar: {
         show: true,
+        autoSelected: 'zoom',
         export: {
           csv: {
-            filename: 'all',
+            filename: gradeName,
             columnDelimiter: ',',
             headerCategory: '日にち',
             headerValue: '出席率',
@@ -69,52 +64,43 @@ export default function AttendanceRateChart({ title, subheader, chart, ...other 
             },
           },
           svg: {
-            filename: 'all',
+            filename: gradeName,
           },
           png: {
-            filename: 'all',
+            filename: gradeName,
           },
         },
-        locales: [
-          {
-            name: 'en',
-            options: {
-              toolbar: {
-                exportToSVG: 'SVGダウンロード',
-                exportToPNG: 'PNGダウンロード',
-                exportToCSV: 'CSVダウンロード',
-              },
+      },
+      locales: [
+        {
+          name: 'en',
+          options: {
+            toolbar: {
+              exportToSVG: 'SVGダウンロード',
+              exportToPNG: 'PNGダウンロード',
+              exportToCSV: 'CSVダウンロード',
             },
           },
-        ],
+        },
+      ],
+      zoom: {
+        type: 'x',
+        enabled: true,
+        autoScaleYaxis: true,
       },
     },
     markers: {
-      size: 5,
+      size: 4,
     },
     ...options,
   });
 
   return (
-    <Card {...other}>
-      <CardHeader title={title} subheader={subheader} />
-
-      <Box sx={{ p: 3, pb: 1 }}>
-        <Chart
-          dir="ltr"
-          type="line"
-          series={series}
-          options={chartOptions}
-          width="100%"
-          height={364}
-        />
-      </Box>
-    </Card>
+    <Chart dir="ltr" type="area" series={series} options={chartOptions} width="100%" height={350} />
   );
 }
 
 AttendanceRateChart.propTypes = {
   chart: PropTypes.object,
-  subheader: PropTypes.string,
-  title: PropTypes.string,
+  gradeName: PropTypes.string,
 };

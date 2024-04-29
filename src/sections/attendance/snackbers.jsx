@@ -41,7 +41,7 @@ export default function Snackbars({
           sx={{ bgcolor: 'background.paper' }}
           onClose={handleDeleteSuccessClose}
         >
-          部員を削除しました。
+          出欠情報を削除しました。
         </Alert>
       </Snackbar>
       <Snackbar
@@ -73,7 +73,7 @@ export default function Snackbars({
           sx={{ bgcolor: 'background.paper' }}
           onClose={handleEditSuccessClose}
         >
-          編集を保存しました。
+          変更を保存しました。
         </Alert>
       </Snackbar>
       <Snackbar

@@ -15,18 +15,16 @@ export default function AttendanceChart({ title, subheader, chart, ...other }) {
     colors,
     plotOptions: {
       bar: {
-        borderRadius: 0
+        borderRadius: 1,
+        columnWidth: '70%',
       },
-    },
-    fill: {
-      type: series.map((i) => i.fill),
     },
     labels,
     xaxis: {
       type: 'datetime',
       labels: {
         format: 'MM/dd',
-      }
+      },
     },
     tooltip: {
       shared: false,
@@ -43,8 +41,8 @@ export default function AttendanceChart({ title, subheader, chart, ...other }) {
         },
       },
     },
-    chart: {
-      stacked: true,
+    markers: {
+      size: 5,
     },
     ...options,
   });
@@ -56,7 +54,7 @@ export default function AttendanceChart({ title, subheader, chart, ...other }) {
       <Box sx={{ p: 3, pb: 1 }}>
         <Chart
           dir="ltr"
-          type="bar"
+          type="line"
           series={series}
           options={chartOptions}
           width="100%"

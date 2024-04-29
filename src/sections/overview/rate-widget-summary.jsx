@@ -10,13 +10,19 @@ import Chart from 'src/components/chart/chart';
 
 // ----------------------------------------------------------------------
 
-export default function RateWidgetSummary({ title, value, icon, sx, ...other }) {
+export default function RateWidgetSummary({ title, subValue, value, icon, sx, ...other }) {
   const theme = useTheme();
   const renderValue = () => {
     if (!value) {
       return 'データなし';
     }
     return `${value.toFixed(2)}%`;
+  };
+  const renderSubValue = () => {
+    if (subValue) {
+      return `(${subValue.toFixed(2)}%)`;
+    }
+    return null;
   };
 
   let series;
@@ -83,7 +89,10 @@ export default function RateWidgetSummary({ title, value, icon, sx, ...other }) 
         <Typography variant="subtitle2" sx={{ color: 'text.disabled' }}>
           {title}
         </Typography>
-        <Typography variant="h4">{renderValue()}</Typography>
+        <Stack direction="row" gap={1} alignItems="end">
+          <Typography variant="h4">{renderValue()}</Typography>
+          <Typography variant="body2">{renderSubValue()}</Typography>
+        </Stack>
       </Stack>
     </Card>
   );
@@ -93,5 +102,6 @@ RateWidgetSummary.propTypes = {
   icon: PropTypes.oneOfType([PropTypes.element, PropTypes.string]),
   sx: PropTypes.object,
   title: PropTypes.string,
+  subValue: PropTypes.number,
   value: PropTypes.number,
 };

@@ -1,21 +1,21 @@
-import {useEffect} from 'react';
+import { useEffect } from 'react';
 import PropTypes from 'prop-types';
 
 import Box from '@mui/material/Box';
 import Stack from '@mui/material/Stack';
 import Drawer from '@mui/material/Drawer';
-import {alpha} from '@mui/material/styles';
+import { alpha } from '@mui/material/styles';
 import ListItemButton from '@mui/material/ListItemButton';
 
-import {usePathname} from 'src/routes/hooks';
-import {RouterLink} from 'src/routes/components';
+import { usePathname } from 'src/routes/hooks';
+import { RouterLink } from 'src/routes/components';
 
-import {useResponsive} from 'src/hooks/use-responsive';
+import { useResponsive } from 'src/hooks/use-responsive';
 
 import Logo from 'src/components/logo';
 import Scrollbar from 'src/components/scrollbar';
 
-import {NAV} from './config-layout';
+import { NAV } from './config-layout';
 import navConfig from './config-navigation';
 
 // ----------------------------------------------------------------------

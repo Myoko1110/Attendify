@@ -1,17 +1,17 @@
 import { Helmet } from 'react-helmet-async';
 
-import { MembersView } from 'src/sections/user/view';
+import { GradeView } from 'src/sections/grade/view';
 
 // ----------------------------------------------------------------------
 
-export default function MembersPage() {
+export default function GradePage() {
   return (
     <>
       <Helmet>
-        <title> 部員 | Attendify </title>
+        <title> 学年 | Attendify </title>
       </Helmet>
 
-      <MembersView />
+      <GradeView />
     </>
   );
 }

@@ -9,8 +9,6 @@ import IconButton from '@mui/material/IconButton';
 import OutlinedInput from '@mui/material/OutlinedInput';
 import InputAdornment from '@mui/material/InputAdornment';
 
-import Member from 'src/utils/member';
-
 import Iconify from 'src/components/iconify';
 
 import UsersDeleteDialog from './users-delete-dialog';
@@ -52,7 +50,7 @@ export default function UserTableToolbar({
     >
       {selected.length > 0 ? (
         <Typography component="div" variant="subtitle1">
-          {selected.length} selected
+          {selected.length}件選択中
         </Typography>
       ) : (
         <>
@@ -111,7 +109,7 @@ UserTableToolbar.propTypes = {
   setDeleteSuccessOpen: PropTypes.func,
   setDeleteErrorOpen: PropTypes.func,
   page: PropTypes.number,
-  members: PropTypes.instanceOf([Member]),
+  members: PropTypes.any,
   rowsPerPage: PropTypes.number,
   handleChangePage: PropTypes.func,
   handleChangeRowsPerPage: PropTypes.func,

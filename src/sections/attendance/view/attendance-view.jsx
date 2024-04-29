@@ -7,7 +7,7 @@ import Stack from '@mui/material/Stack';
 import Container from '@mui/material/Container';
 import Typography from '@mui/material/Typography';
 import LinearProgress from '@mui/material/LinearProgress';
-import { Accordion, AccordionDetails, AccordionSummary } from '@mui/material';
+import { Box, Accordion, AccordionDetails, AccordionSummary } from '@mui/material';
 
 import { useResponsive } from 'src/hooks/use-responsive';
 
@@ -38,7 +38,8 @@ export default function AttendanceView() {
 
   const updateAttendances = async () => {
     await Attendances.all(cookies).then((res) => {
-      setAttendances(res.toMonthList());
+      setAttendances(res.toObject());
+      console.log(res.toObject());
     });
   };
 
@@ -50,83 +51,104 @@ export default function AttendanceView() {
 
       <Card>
         {attendances && (
-          <>
-            {Object.keys(attendances).map((row, i) => {
-              const { rate } = attendances[row];
-              return (
-                <Accordion
-                  key={i}
-                  {...(i === 0 && {
-                    defaultExpanded: true,
-                  })}
-                >
-                  <AccordionSummary
-                    sx={{
-                      px: 2,
-                      backgroundColor: theme.palette.grey[200],
-                      '&:hover': { backgroundColor: theme.palette.grey[300] },
-                    }}
-                    expandIcon={<Iconify icon="eva:arrow-ios-downward-fill" />}
-                  >
-                    <Stack
-                      direction="row"
-                      alignItems="center"
-                      justifyContent="space-between"
-                      sx={{ width: '100%', px: 4 }}
-                    >
-                      <Typography variant="h4">{row}月</Typography>
-                      <Stack direction="row" alignItems="center" gap={1}>
-                        {rate ? (
-                          <>
-                            <LinearProgress
-                              variant="determinate"
-                              value={rate}
-                              sx={{
-                                height: '10px',
-                                borderRadius: '100px',
-                                ...(lgUp
-                                  ? {
-                                      width: 150,
-                                    }
-                                  : {
-                                      width: 100,
-                                    }),
-                                ...(rate >= 80
-                                  ? {
-                                      backgroundColor: 'success.lighter',
-                                      '& .MuiLinearProgress-bar': {
-                                        backgroundColor: 'success.main',
-                                      },
-                                    }
-                                  : {
-                                      backgroundColor: 'warning.lighter',
-                                      '& .MuiLinearProgress-bar': {
-                                        backgroundColor: 'warning.main',
-                                      },
-                                    }),
-                              }}
+          <Stack direction="column" spacing={4}>
+            {Object.keys(attendances)
+              .reverse()
+              .map((y, i) => (
+                <Box key={i}>
+                  <Box bgcolor={theme.palette.grey[300]} sx={{ px: 2, py: 1 }}>
+                    <Typography variant="body2" textAlign="center">
+                      {y}年
+                    </Typography>
+                  </Box>
+                  {Object.keys(attendances[y])
+                    .reverse()
+                    .map((m, j) => {
+                      const { rate, actualRate } = attendances[y][m];
+                      return (
+                        <Accordion
+                          key={j}
+                          {...(i === 0 &&
+                            j === 0 && {
+                              defaultExpanded: true,
+                            })}
+                        >
+                          <AccordionSummary
+                            sx={{
+                              px: 2,
+                              backgroundColor: theme.palette.grey[200],
+                              '&:hover': { backgroundColor: theme.palette.grey[300] },
+                            }}
+                            expandIcon={<Iconify icon="eva:arrow-ios-downward-fill" />}
+                          >
+                            <Stack
+                              direction="row"
+                              alignItems="center"
+                              justifyContent="space-between"
+                              sx={{ width: '100%', px: 4 }}
+                            >
+                              <Typography variant="h4">{m}月</Typography>
+                              <Stack direction="row" alignItems="center" gap={1}>
+                                {rate ? (
+                                  <>
+                                    <LinearProgress
+                                      variant="determinate"
+                                      value={rate}
+                                      sx={{
+                                        height: '10px',
+                                        borderRadius: '100px',
+                                        ...(lgUp
+                                          ? {
+                                              width: 150,
+                                            }
+                                          : {
+                                              width: 100,
+                                            }),
+                                        ...(rate >= 80
+                                          ? {
+                                              backgroundColor: 'success.lighter',
+                                              '& .MuiLinearProgress-bar': {
+                                                backgroundColor: 'success.main',
+                                              },
+                                            }
+                                          : {
+                                              backgroundColor: 'warning.lighter',
+                                              '& .MuiLinearProgress-bar': {
+                                                backgroundColor: 'warning.main',
+                                              },
+                                            }),
+                                      }}
+                                    />
+                                    <Stack direction="row" gap={1}>
+                                      <Typography variant="subtitle2" width={70} textAlign="right">
+                                        {rate.toFixed(2)}%
+                                      </Typography>
+                                      <Typography variant="body2" width={60}>
+                                        ({actualRate.toFixed(2)}%)
+                                      </Typography>
+                                    </Stack>
+                                  </>
+                                ) : (
+                                  <Typography variant="body2">データなし</Typography>
+                                )}
+                              </Stack>
+                            </Stack>
+                          </AccordionSummary>
+                          <AccordionDetails sx={{ px: 4 }}>
+                            <AttendanceDates
+                              attendances={attendances[y][m]}
+                              setDeleteSuccessOpen={setDeleteSuccessOpen}
+                              setDeleteErrorOpen={setDeleteErrorOpen}
+                              setEditSuccessOpen={setEditSuccessOpen}
+                              setEditErrorOpen={setEditErrorOpen}
                             />
-                            <Typography variant="body2">{rate.toFixed(2)}%</Typography>
-                          </>
-                        ) : (
-                          <Typography variant="body2">データなし</Typography>
-                        )}
-                      </Stack>
-                    </Stack>
-                  </AccordionSummary>
-                  <AccordionDetails sx={{ px: 4 }}>
-                    <AttendanceDates
-                      attendances={attendances[row]}
-                      setDeleteSuccessOpen={setDeleteSuccessOpen}
-                      setDeleteErrorOpen={setDeleteErrorOpen}
-                      setEditSuccessOpen={setEditSuccessOpen}
-                      setEditErrorOpen={setEditErrorOpen}
-                    />
-                  </AccordionDetails>
-                </Accordion>
-              );
-            })}
-          </>
+                          </AccordionDetails>
+                        </Accordion>
+                      );
+                    })}
+                </Box>
+              ))}
+          </Stack>
         )}
       </Card>
       <Snackbars

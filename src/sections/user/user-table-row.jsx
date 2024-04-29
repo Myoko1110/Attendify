@@ -2,6 +2,7 @@ import { useState } from 'react';
 import PropTypes from 'prop-types';
 import { useCookies } from 'react-cookie';
 
+import { Chip, Stack } from '@mui/material';
 import Popover from '@mui/material/Popover';
 import TableRow from '@mui/material/TableRow';
 import Checkbox from '@mui/material/Checkbox';
@@ -11,6 +12,8 @@ import Grid from '@mui/material/Unstable_Grid2';
 import Typography from '@mui/material/Typography';
 import IconButton from '@mui/material/IconButton';
 import LinearProgress from '@mui/material/LinearProgress';
+
+import { useRouter } from 'src/routes/hooks';
 
 import Member from 'src/utils/member';
 import Attendances from 'src/utils/attendances';
@@ -36,8 +39,10 @@ export default function UserTableRow({
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [editDialogOpen, setEditDialogOpen] = useState(false);
   const [rate, setRate] = useState(null);
+  const [actualRate, setActualRate] = useState(null);
 
   const [cookies] = useCookies(['']);
+  const router = useRouter();
 
   const handleOpenMenu = (event) => {
     setOpen(event.currentTarget);
@@ -59,6 +64,7 @@ export default function UserTableRow({
   useState(async () => {
     await Attendances.byMember(member.id, cookies).then((r) => {
       setRate(r.rate);
+      setActualRate(r.actualRate);
       member.rate = r.rate;
     });
   });
@@ -71,14 +77,31 @@ export default function UserTableRow({
         </TableCell>
 
         <TableCell>
-          <Typography variant="subtitle1" noWrap>
+          <Typography
+            variant="subtitle1"
+            noWrap
+            onClick={() => router.replace(`/members/${member.id}`)}
+            sx={{ cursor: 'pointer' }}
+          >
             {member.lastName}&nbsp;{member.firstName}
           </Typography>
         </TableCell>
 
-        <TableCell>{member.part}</TableCell>
+        <TableCell>
+          <Chip
+            label={member.part}
+            variant="outlined"
+            onClick={() => router.replace(`/parts/${member.part}`)}
+          />
+        </TableCell>
 
-        <TableCell>{member.grade.jpOmitted}</TableCell>
+        <TableCell>
+          <Chip
+            label={member.grade.jpOmitted}
+            variant="outlined"
+            onClick={() => router.replace(`/grade/${member.grade.enOmitted}`)}
+          />
+        </TableCell>
 
         <TableCell align="center">
           <Grid container alignItems="center" justify="spaceBetween">
@@ -114,7 +137,14 @@ export default function UserTableRow({
                   )}
                 </Grid>
                 <Grid item xs={6}>
-                  <Typography variant="body2">{rate && <>{rate.toFixed(2)}%</>}</Typography>
+                  <Stack direction="row" gap={1}>
+                    <Typography variant="subtitle2" width={70} textAlign="right">
+                      {rate && <>{rate.toFixed(2)}%</>}
+                    </Typography>
+                    <Typography variant="body2" width={60}>
+                      {actualRate && <>({actualRate.toFixed(2)}%)</>}
+                    </Typography>
+                  </Stack>
                 </Grid>
               </>
             ) : (

@@ -92,23 +92,30 @@ export default function HomeView() {
       </Typography>
 
       <Grid container spacing={3}>
-        <Grid xs={12} sm={6} md={4}>
+        <Grid xs={12} sm={12} md={4}>
           <RateWidgetSummary
             title="今日の出席率"
             value={allAttendances.today.rate}
+            subValue={allAttendances.today.actualRate}
             color="warning"
             rate={100}
           />
         </Grid>
 
         <Grid xs={12} sm={6} md={4}>
-          <RateWidgetSummary title="全体の出席率" value={allAttendances.rate} color="success" />
+          <RateWidgetSummary
+            title="全体の出席率"
+            value={allAttendances.rate}
+            subValue={allAttendances.actualRate}
+            color="success"
+          />
         </Grid>
 
         <Grid xs={12} sm={6} md={4}>
           <RateWidgetSummary
             title="今月の出席率"
             value={allAttendances.thisMonth.rate}
+            subValue={allAttendances.thisMonth.actualRate}
             color="info"
           />
         </Grid>
