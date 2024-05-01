@@ -1,4 +1,3 @@
-import axios from 'axios';
 import PropTypes from 'prop-types';
 import { useCookies } from 'react-cookie';
 import { useState, useEffect } from 'react';
@@ -18,17 +17,19 @@ import {
   ToggleButtonGroup,
 } from '@mui/material';
 
+import instance from 'src/utils/api';
+
 import { info, error, success, warning } from 'src/theme/palette';
 
 import Iconify from 'src/components/iconify';
 
 export default function EditScheduleDialog({
-                                             isOpen,
-                                             setIsOpen,
-                                             date,
-                                             scheduleType,
-                                             updateSchedules,
-                                           }) {
+  isOpen,
+  setIsOpen,
+  date,
+  scheduleType,
+  updateSchedules,
+}) {
   const [addSuccessSnackbarOpen, setAddSuccessSnackbarOpen] = useState(false);
   const [addErrorSnackbarOpen, setAddErrorSnackbarOpen] = useState(false);
   const [deleteSuccessSnackbarOpen, setDeleteSuccessSnackbarOpen] = useState(false);
@@ -43,7 +44,7 @@ export default function EditScheduleDialog({
 
   const resetInputs = () => {
     setIsError(false);
-    setOtherField("");
+    setOtherField('');
   };
 
   const handleSaveClick = (e) => {
@@ -57,8 +58,14 @@ export default function EditScheduleDialog({
       setIsReserved(false);
 
       let sendSchedule = schedule;
-      if (schedule === "OTHER") {
-        if (otherField === "WEEKDAY" || otherField === "MORNING" || otherField === "AFTERNOON" || otherField === "ALLDAY" || otherField === "OTHER") {
+      if (schedule === 'OTHER') {
+        if (
+          otherField === 'WEEKDAY' ||
+          otherField === 'MORNING' ||
+          otherField === 'AFTERNOON' ||
+          otherField === 'ALLDAY' ||
+          otherField === 'OTHER'
+        ) {
           setIsReserved(true);
           setIsError(false);
           return;
@@ -68,8 +75,8 @@ export default function EditScheduleDialog({
       }
 
       const { session, userId } = cookies;
-      axios
-        .put('http://localhost:8000/api/v1/schedule/', {
+      instance
+        .put('/api/v1/schedule/', {
           userId: userId.replace('_', ''),
           token: session,
           date: Number(date.getTime() / 1000),
@@ -94,8 +101,8 @@ export default function EditScheduleDialog({
     setIsError(false);
 
     const { session, userId } = cookies;
-    axios
-      .delete('http://localhost:8000/api/v1/schedule/', {
+    instance
+      .delete('/api/v1/schedule/', {
         data: {
           userId: userId.replace('_', ''),
           token: session,

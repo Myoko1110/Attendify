@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom';
 import { useCookies } from 'react-cookie';
 import { useState, useEffect } from 'react';
 
@@ -181,6 +182,7 @@ export default function HomeView() {
           />
         </Grid>
       </Grid>
+      <Link to="https://github.com/Myoko1110/Attendify">Source Code</Link>
     </Container>
   );
 }

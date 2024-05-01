@@ -1,4 +1,3 @@
-import axios from 'axios';
 import dayjs from 'dayjs';
 import PropTypes from 'prop-types';
 import { useCookies } from 'react-cookie';
@@ -6,6 +5,8 @@ import { useState, useEffect } from 'react';
 
 import Box from '@mui/material/Box';
 import { Stack, Alert, Button, Typography } from '@mui/material';
+
+import instance from 'src/utils/api';
 
 import Iconify from 'src/components/iconify';
 
@@ -30,8 +31,8 @@ export default function AttendanceSelect({
   useEffect(() => {
     const { session, userId } = cookies;
 
-    axios
-      .get('http://localhost:8000/api/v1/attendance/response/', {
+    instance
+      .get('/api/v1/attendance/response/', {
         params: {
           date: dayjs(date).unix(),
           part,

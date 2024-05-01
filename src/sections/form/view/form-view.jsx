@@ -1,4 +1,3 @@
-import axios from 'axios';
 import { useCookies } from 'react-cookie';
 import { useRef, useState, useEffect } from 'react';
 
@@ -15,6 +14,7 @@ import { useRouter } from 'src/routes/hooks';
 
 import { useResponsive } from 'src/hooks/use-responsive';
 
+import instance from 'src/utils/api';
 import Schedule from 'src/utils/schedule';
 import { checkSession } from 'src/utils/session';
 
@@ -131,8 +131,8 @@ export default function FormView() {
       setError(false);
       const { session, userId } = cookies;
 
-      axios
-        .post('http://localhost:8000/api/v1/attendance/', {
+      instance
+        .post('/api/v1/attendance/', {
           attendances,
           part,
           grade,

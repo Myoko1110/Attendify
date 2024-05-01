@@ -1,4 +1,3 @@
-import axios from 'axios';
 import { useState } from 'react';
 import PropTypes from 'prop-types';
 import { useCookies } from 'react-cookie';
@@ -20,6 +19,7 @@ import {
 } from '@mui/material';
 
 import Grades from 'src/utils/grade';
+import instance from 'src/utils/api';
 
 import Parts from '../../utils/part';
 
@@ -64,8 +64,8 @@ export default function UserAddDialog({ isDialogOpen, setIsDialogOpen, updateUse
     } else {
       setIsError(false);
       const { session, userId } = cookies;
-      axios
-        .post('http://localhost:8000/api/v1/member/', {
+      instance
+        .post('/api/v1/member/', {
           lastName,
           firstName,
           part,
@@ -76,7 +76,7 @@ export default function UserAddDialog({ isDialogOpen, setIsDialogOpen, updateUse
         .then(() => {
           setIsDialogOpen(false);
           updateUsers();
-          resetInputs()
+          resetInputs();
           setAddSuccessSnackbarOpen(true);
         })
         .catch(() => {
@@ -183,8 +183,10 @@ export default function UserAddDialog({ isDialogOpen, setIsDialogOpen, updateUse
                   <MenuItem value="" disabled>
                     選択
                   </MenuItem>
-                  {Object.keys(Grades).map(key => (
-                    <MenuItem key={Grades[key].en} value={Grades[key].en}>{Grades[key].jpOmitted}</MenuItem>
+                  {Object.keys(Grades).map((key) => (
+                    <MenuItem key={Grades[key].en} value={Grades[key].en}>
+                      {Grades[key].jpOmitted}
+                    </MenuItem>
                   ))}
                 </Select>
               </FormControl>

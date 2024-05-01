@@ -1,4 +1,3 @@
-import axios from 'axios';
 import PropTypes from 'prop-types';
 import { useCookies } from 'react-cookie';
 
@@ -11,6 +10,7 @@ import {
   DialogContentText,
 } from '@mui/material';
 
+import instance from 'src/utils/api';
 import Member from 'src/utils/member';
 
 export default function UserDeleteDialog({
@@ -29,8 +29,8 @@ export default function UserDeleteDialog({
 
   const handleDeleteClick = () => {
     const { session, userId } = cookies;
-    axios
-      .delete('http://localhost:8000/api/v1/member/', {
+    instance
+      .delete('/api/v1/member/', {
         data: {
           ids: [member.id],
           userId: userId.replace('_', ''),

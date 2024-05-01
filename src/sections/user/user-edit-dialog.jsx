@@ -1,4 +1,3 @@
-import axios from 'axios';
 import PropTypes from 'prop-types';
 import { useCookies } from 'react-cookie';
 import { useState, useEffect } from 'react';
@@ -20,6 +19,7 @@ import {
 
 import Parts from 'src/utils/part';
 import Grades from 'src/utils/grade';
+import instance from 'src/utils/api';
 import Member from 'src/utils/member';
 
 export default function UserEditDialog({
@@ -64,8 +64,8 @@ export default function UserEditDialog({
       setIsError(false);
 
       const { session, userId } = cookies;
-      axios
-        .put('http://localhost:8000/api/v1/member/', {
+      instance
+        .put('/api/v1/member/', {
           lastName,
           firstName,
           id: member.id,
@@ -182,8 +182,10 @@ export default function UserEditDialog({
                 <MenuItem value="" disabled>
                   選択
                 </MenuItem>
-                {Object.keys(Grades).map(key => (
-                  <MenuItem key={Grades[key].en} value={Grades[key].en}>{Grades[key].jpOmitted}</MenuItem>
+                {Object.keys(Grades).map((key) => (
+                  <MenuItem key={Grades[key].en} value={Grades[key].en}>
+                    {Grades[key].jpOmitted}
+                  </MenuItem>
                 ))}
               </Select>
             </FormControl>

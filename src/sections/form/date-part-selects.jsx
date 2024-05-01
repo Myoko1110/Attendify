@@ -23,7 +23,7 @@ export default function DatePartSelects({ date, part, grade, dates, setDate, set
   return (
     <Box sx={{ mt: 6, mx: 'auto' }}>
       <FormControl fullWidth sx={{ my: 1 }}>
-        <FormLabel>日付</FormLabel>
+        <FormLabel sx={{ fontSize: '15px', color: '#000000' }}>日付</FormLabel>
         <Select
           id="date"
           inputProps={{ 'aria-label': 'Without label' }}
@@ -43,7 +43,7 @@ export default function DatePartSelects({ date, part, grade, dates, setDate, set
         </Select>
       </FormControl>
       <FormControl fullWidth sx={{ my: 1 }}>
-        <FormLabel>パート</FormLabel>
+        <FormLabel sx={{ fontSize: '15px', color: '#000000' }}>パート</FormLabel>
         <Select
           id="part"
           inputProps={{ 'aria-label': 'Without label' }}
@@ -66,7 +66,7 @@ export default function DatePartSelects({ date, part, grade, dates, setDate, set
         </Select>
       </FormControl>
       <FormControl fullWidth sx={{ my: 1 }}>
-        <FormLabel>学年</FormLabel>
+        <FormLabel sx={{ fontSize: '15px', color: '#000000' }}>学年</FormLabel>
         <RadioGroup name="radio-buttons-group" onChange={handleGradeChange} value={grade}>
           <FormControlLabel value="High" control={<Radio />} label="高校" />
           <FormControlLabel value="Junior" control={<Radio />} label="中学" />

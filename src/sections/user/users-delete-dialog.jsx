@@ -1,4 +1,3 @@
-import axios from 'axios';
 import { useState } from 'react';
 import PropTypes from 'prop-types';
 import { useCookies } from 'react-cookie';
@@ -6,15 +5,17 @@ import { useCookies } from 'react-cookie';
 import Button from '@mui/material/Button';
 import { Alert, Dialog, Snackbar, DialogTitle, DialogActions } from '@mui/material';
 
+import instance from 'src/utils/api';
+
 export default function UsersDeleteDialog({
-                                            open,
-                                            setOpen,
-                                            ids,
-                                            updateUsers,
-                                            setSelected,
-                                            setDeleteSuccessOpen,
-                                            setDeleteErrorOpen,
-                                          }) {
+  open,
+  setOpen,
+  ids,
+  updateUsers,
+  setSelected,
+  setDeleteSuccessOpen,
+  setDeleteErrorOpen,
+}) {
   const [cookies] = useCookies(['']);
 
   const [successSnackbarOpen, setSuccessSnackbarOpen] = useState(false);
@@ -33,8 +34,8 @@ export default function UsersDeleteDialog({
 
   const handleDeleteClick = () => {
     const { session, userId } = cookies;
-    axios
-      .delete('http://localhost:8000/api/v1/member/', {
+    instance
+      .delete('/api/v1/member/', {
         data: {
           ids,
           userId: userId.replace('_', ''),
@@ -96,7 +97,9 @@ export default function UsersDeleteDialog({
         autoHideDuration={5000}
         onClose={handleErrorSnackbarClose}
       >
-        <Alert severity="error" onClose={handleErrorSnackbarClose}>削除に失敗しました。</Alert>
+        <Alert severity="error" onClose={handleErrorSnackbarClose}>
+          削除に失敗しました。
+        </Alert>
       </Snackbar>
     </>
   );

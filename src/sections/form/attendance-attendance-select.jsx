@@ -42,7 +42,7 @@ export default function AttendanceMemberSelect({ id, lastName, firstName, setAtt
 
   return (
     <FormControl fullWidth sx={{ my: 1 }}>
-      <FormLabel sx={{ fontSize: '15px' }}>
+      <FormLabel sx={{ fontSize: '15px', color: '#000000' }}>
         {lastName} {firstName}
       </FormLabel>
       <Stack direction="row" alignItems="center">

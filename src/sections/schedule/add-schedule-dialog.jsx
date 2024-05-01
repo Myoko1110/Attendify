@@ -45,11 +45,9 @@ export default function AddScheduleDialog({ isOpen, setIsOpen, date, setEvents }
     if (!schedule) {
       setIsError(true);
     } else {
-
-
       let scheduleType;
       if (isOther) {
-        if ((!otherSchedule)) {
+        if (!otherSchedule) {
           setIsError(true);
           return;
         }
@@ -61,16 +59,19 @@ export default function AddScheduleDialog({ isOpen, setIsOpen, date, setEvents }
       const s = new Schedule(date, new ScheduleType(scheduleType));
       s.add(cookies)
         .then(() => {
-          setEvents((pre) => [...pre, {
-            start: date,
-            title: s.type.jp,
-            color: s.type.color,
-            textColor: s.type.textColor,
-            allDay: true,
-            extendedProps: {
-              type: s.type,
+          setEvents((pre) => [
+            ...pre,
+            {
+              start: date,
+              title: s.type.jp,
+              color: s.type.color,
+              textColor: s.type.textColor,
+              allDay: true,
+              extendedProps: {
+                type: s.type,
+              },
             },
-          }]);
+          ]);
           setIsOpen(false);
           setAddSuccessSnackbarOpen(true);
         })
@@ -78,6 +79,8 @@ export default function AddScheduleDialog({ isOpen, setIsOpen, date, setEvents }
           setIsOpen(false);
           setAddErrorSnackbarOpen(true);
         });
+
+      resetInputs();
     }
   };
 

@@ -31,7 +31,7 @@ export default function GradeView() {
 
   useEffect(() => {
     if (!['j1', 'j2', 'j3', 'h1', 'h2', 'h3'].includes(gradeParam)) {
-      setTitle('パートが無効です');
+      setTitle('学年が無効です');
     } else {
       let gradeName;
       switch (gradeParam) {
@@ -94,7 +94,7 @@ export default function GradeView() {
   return (
     <Container>
       <Stack direction="row" justifyContent="space-between" mb={5}>
-        <Typography variant="h3">パート</Typography>
+        <Typography variant="h3">学年</Typography>
       </Stack>
       <Card sx={{ p: 3 }}>
         <Button onClick={() => router.replace('/members')} color="inherit">
