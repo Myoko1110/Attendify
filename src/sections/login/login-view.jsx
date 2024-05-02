@@ -7,6 +7,7 @@ import Card from '@mui/material/Card';
 import Link from '@mui/material/Link';
 import Stack from '@mui/material/Stack';
 import Button from '@mui/material/Button';
+import { CircularProgress } from '@mui/material';
 import Typography from '@mui/material/Typography';
 import { alpha, useTheme } from '@mui/material/styles';
 
@@ -31,6 +32,7 @@ export default function LoginView() {
   const { search } = useLocation();
 
   const [errorMessage, setErrorMessage] = useState('');
+  const [isLoad, setIsLoad] = useState(false);
   const [cookies, setCookie] = useCookies(['status', '']);
 
   useEffect(() => {
@@ -46,6 +48,7 @@ export default function LoginView() {
 
     const code = new URLSearchParams(search).get('code');
     if (code) {
+      setIsLoad(true);
       instance
         .post('/api/v1/auth/login/', { code })
         .then((response) => {
@@ -97,6 +100,7 @@ export default function LoginView() {
             p: 5,
             width: 1,
             maxWidth: 420,
+            position: 'relative',
           }}
         >
           <Typography variant="h4">ログイン</Typography>
@@ -122,6 +126,20 @@ export default function LoginView() {
               </Typography>
             </Button>
           </Link>
+
+          {isLoad && (
+            <Stack
+              sx={{ position: 'absolute', height: '100%', width: '100%' }}
+              direction="row"
+              alignItems="center"
+              justifyContent="center"
+              top={0}
+              left={0}
+              bgcolor="rgba(255,255,255,.6)"
+            >
+              <CircularProgress />
+            </Stack>
+          )}
         </Card>
       </Stack>
     </Box>

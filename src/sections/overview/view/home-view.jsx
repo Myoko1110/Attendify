@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom';
 import { useCookies } from 'react-cookie';
 import { useState, useEffect } from 'react';
 
+import { Stack, Button } from '@mui/material';
 import Container from '@mui/material/Container';
 import Grid from '@mui/material/Unstable_Grid2';
 import Typography from '@mui/material/Typography';
@@ -182,7 +183,11 @@ export default function HomeView() {
           />
         </Grid>
       </Grid>
-      <Link to="https://github.com/Myoko1110/Attendify">Source Code</Link>
+      <Stack direction="row" justifyContent="end">
+        <Link to="https://github.com/Myoko1110/Attendify">
+          <Button color="inherit">Source Code</Button>
+        </Link>
+      </Stack>
     </Container>
   );
 }
